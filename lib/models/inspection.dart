@@ -1,9 +1,10 @@
 class Inspection {
   final String id;
   final String restaurantId;
+  final String restaurantName;
   final String inspectorId;
   final DateTime inspectionDate;
-  final double? overallScore;
+  final double? score;
   final String status; // 'pending', 'completed', 'failed', 'passed'
   final String? notes;
   final DateTime? nextInspectionDate;
@@ -14,9 +15,10 @@ class Inspection {
   Inspection({
     required this.id,
     required this.restaurantId,
+    required this.restaurantName,
     required this.inspectorId,
     required this.inspectionDate,
-    this.overallScore,
+    this.score,
     required this.status,
     this.notes,
     this.nextInspectionDate,
@@ -29,9 +31,10 @@ class Inspection {
     return Inspection(
       id: json['id'] ?? '',
       restaurantId: json['restaurant_id'] ?? '',
+      restaurantName: json['restaurant_name'] ?? '',
       inspectorId: json['inspector_id'] ?? '',
       inspectionDate: DateTime.parse(json['inspection_date'] ?? DateTime.now().toIso8601String()),
-      overallScore: json['overall_score'] != null ? double.parse(json['overall_score'].toString()) : null,
+      score: json['score'] != null ? double.parse(json['score'].toString()) : null,
       status: json['status'] ?? 'pending',
       notes: json['notes'],
       nextInspectionDate: json['next_inspection_date'] != null
@@ -50,6 +53,9 @@ class ChecklistItem {
   final double weight;
   final bool isCritical;
   final String? fssaiSection;
+  final String? compliance; // 'compliant', 'non_compliant', 'needs_improvement', 'not_applicable'
+  final String? comments;
+  final String? evidenceImage;
 
   ChecklistItem({
     required this.id,
@@ -58,6 +64,9 @@ class ChecklistItem {
     required this.weight,
     required this.isCritical,
     this.fssaiSection,
+    this.compliance,
+    this.comments,
+    this.evidenceImage,
   });
 
   factory ChecklistItem.fromJson(Map<String, dynamic> json) {
@@ -68,6 +77,9 @@ class ChecklistItem {
       weight: json['weight'] != null ? double.parse(json['weight'].toString()) : 1.0,
       isCritical: json['is_critical'] ?? false,
       fssaiSection: json['fssai_section'],
+      compliance: json['compliance'],
+      comments: json['comments'],
+      evidenceImage: json['evidence_image'],
     );
   }
 }

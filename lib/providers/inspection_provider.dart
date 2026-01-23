@@ -1,48 +1,6 @@
 import 'package:flutter/material.dart';
-
-class Inspection {
-  final String id;
-  final String restaurantId;
-  final String restaurantName;
-  final DateTime inspectionDate;
-  final String status; // 'pending', 'in_progress', 'completed', 'failed'
-  final double? score;
-  final DateTime? nextInspectionDate;
-  final List<ChecklistItem> checklistItems;
-
-  Inspection({
-    required this.id,
-    required this.restaurantId,
-    required this.restaurantName,
-    required this.inspectionDate,
-    this.status = 'pending',
-    this.score,
-    this.nextInspectionDate,
-    this.checklistItems = const [],
-  });
-}
-
-class ChecklistItem {
-  final String id;
-  final String category;
-  final String text;
-  final double weight;
-  final bool isCritical;
-  final String? compliance; // 'compliant', 'non_compliant', 'needs_improvement', 'not_applicable'
-  final String? comments;
-  final String? evidenceImage;
-
-  ChecklistItem({
-    required this.id,
-    required this.category,
-    required this.text,
-    required this.weight,
-    required this.isCritical,
-    this.compliance,
-    this.comments,
-    this.evidenceImage,
-  });
-}
+import '../models/inspection.dart';
+import '../models/user.dart';
 
 class InspectionProvider with ChangeNotifier {
   List<Inspection> _inspections = [];
@@ -66,28 +24,28 @@ class InspectionProvider with ChangeNotifier {
       ChecklistItem(
         id: '1',
         category: 'Personal Hygiene',
-        text: 'Food handlers wear clean protective clothing',
+        itemText: 'Food handlers wear clean protective clothing',
         weight: 1.0,
         isCritical: false,
       ),
       ChecklistItem(
         id: '2',
         category: 'Personal Hygiene',
-        text: 'Hands washed properly and frequently',
+        itemText: 'Hands washed properly and frequently',
         weight: 1.5,
         isCritical: true,
       ),
       ChecklistItem(
         id: '3',
         category: 'Personal Hygiene',
-        text: 'No jewelry on hands/arms while handling food',
+        itemText: 'No jewelry on hands/arms while handling food',
         weight: 1.0,
         isCritical: false,
       ),
       ChecklistItem(
         id: '4',
         category: 'Personal Hygiene',
-        text: 'No signs of illness among staff',
+        itemText: 'No signs of illness among staff',
         weight: 1.5,
         isCritical: true,
       ),
@@ -96,28 +54,28 @@ class InspectionProvider with ChangeNotifier {
       ChecklistItem(
         id: '5',
         category: 'Food Storage',
-        text: 'Raw and cooked foods stored separately',
+        itemText: 'Raw and cooked foods stored separately',
         weight: 2.0,
         isCritical: true,
       ),
       ChecklistItem(
         id: '6',
         category: 'Food Storage',
-        text: 'Food stored at correct temperatures',
+        itemText: 'Food stored at correct temperatures',
         weight: 2.0,
         isCritical: true,
       ),
       ChecklistItem(
         id: '7',
         category: 'Food Storage',
-        text: 'FIFO (First In First Out) system followed',
+        itemText: 'FIFO (First In First Out) system followed',
         weight: 1.0,
         isCritical: false,
       ),
       ChecklistItem(
         id: '8',
         category: 'Food Storage',
-        text: 'Storage areas clean and pest-free',
+        itemText: 'Storage areas clean and pest-free',
         weight: 1.5,
         isCritical: true,
       ),
@@ -126,28 +84,28 @@ class InspectionProvider with ChangeNotifier {
       ChecklistItem(
         id: '9',
         category: 'Kitchen Hygiene',
-        text: 'Food contact surfaces clean and sanitized',
+        itemText: 'Food contact surfaces clean and sanitized',
         weight: 2.0,
         isCritical: true,
       ),
       ChecklistItem(
         id: '10',
         category: 'Kitchen Hygiene',
-        text: 'Separate cutting boards for raw/cooked foods',
+        itemText: 'Separate cutting boards for raw/cooked foods',
         weight: 1.5,
         isCritical: true,
       ),
       ChecklistItem(
         id: '11',
         category: 'Kitchen Hygiene',
-        text: 'Proper waste disposal system',
+        itemText: 'Proper waste disposal system',
         weight: 1.5,
         isCritical: true,
       ),
       ChecklistItem(
         id: '12',
         category: 'Kitchen Hygiene',
-        text: 'No cross-contamination observed',
+        itemText: 'No cross-contamination observed',
         weight: 2.0,
         isCritical: true,
       ),
@@ -156,21 +114,21 @@ class InspectionProvider with ChangeNotifier {
       ChecklistItem(
         id: '13',
         category: 'Equipment',
-        text: 'Equipment clean and in good repair',
+        itemText: 'Equipment clean and in good repair',
         weight: 1.5,
         isCritical: false,
       ),
       ChecklistItem(
         id: '14',
         category: 'Equipment',
-        text: 'Thermometers available and calibrated',
+        itemText: 'Thermometers available and calibrated',
         weight: 1.0,
         isCritical: false,
       ),
       ChecklistItem(
         id: '15',
         category: 'Equipment',
-        text: 'Proper dishwashing facilities',
+        itemText: 'Proper dishwashing facilities',
         weight: 1.0,
         isCritical: false,
       ),
@@ -179,21 +137,21 @@ class InspectionProvider with ChangeNotifier {
       ChecklistItem(
         id: '16',
         category: 'Documentation',
-        text: 'FSSAI license displayed and valid',
+        itemText: 'FSSAI license displayed and valid',
         weight: 1.5,
         isCritical: true,
       ),
       ChecklistItem(
         id: '17',
         category: 'Documentation',
-        text: 'Staff training records maintained',
+        itemText: 'Staff training records maintained',
         weight: 1.0,
         isCritical: false,
       ),
       ChecklistItem(
         id: '18',
         category: 'Documentation',
-        text: 'Pest control records available',
+        itemText: 'Pest control records available',
         weight: 1.0,
         isCritical: false,
       ),
@@ -205,36 +163,48 @@ class InspectionProvider with ChangeNotifier {
         id: '1',
         restaurantId: '1',
         restaurantName: 'Food Haven Restaurant',
+        inspectorId: 'inspector_1',
         inspectionDate: DateTime.now().add(const Duration(days: 2)),
         status: 'pending',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
         checklistItems: _checklistTemplate,
       ),
       Inspection(
         id: '2',
         restaurantId: '2',
         restaurantName: 'Spice Palace',
+        inspectorId: 'inspector_1',
         inspectionDate: DateTime.now().add(const Duration(days: 5)),
         status: 'pending',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
         checklistItems: _checklistTemplate,
       ),
       Inspection(
         id: '3',
         restaurantId: '3',
         restaurantName: 'Ocean View Cafe',
+        inspectorId: 'inspector_1',
         inspectionDate: DateTime.now().subtract(const Duration(days: 7)),
         status: 'completed',
         score: 85.5,
         nextInspectionDate: DateTime.now().add(const Duration(days: 90)),
+        createdAt: DateTime.now().subtract(const Duration(days: 7)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 7)),
         checklistItems: _checklistTemplate,
       ),
       Inspection(
         id: '4',
         restaurantId: '4',
         restaurantName: 'Quick Bites Fast Food',
+        inspectorId: 'inspector_1',
         inspectionDate: DateTime.now().subtract(const Duration(days: 30)),
         status: 'failed',
         score: 45.0,
         nextInspectionDate: DateTime.now().add(const Duration(days: 30)),
+        createdAt: DateTime.now().subtract(const Duration(days: 30)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 30)),
         checklistItems: _checklistTemplate,
       ),
     ];
@@ -263,7 +233,7 @@ class InspectionProvider with ChangeNotifier {
           return ChecklistItem(
             id: item.id,
             category: item.category,
-            text: item.text,
+            itemText: item.itemText,
             weight: item.weight,
             isCritical: item.isCritical,
             compliance: compliance,
@@ -278,10 +248,13 @@ class InspectionProvider with ChangeNotifier {
         id: inspection.id,
         restaurantId: inspection.restaurantId,
         restaurantName: inspection.restaurantName,
+        inspectorId: inspection.inspectorId,
         inspectionDate: inspection.inspectionDate,
         status: 'in_progress',
         score: inspection.score,
         nextInspectionDate: inspection.nextInspectionDate,
+        createdAt: inspection.createdAt,
+        updatedAt: DateTime.now(),
         checklistItems: updatedItems,
       );
     }
@@ -330,10 +303,13 @@ class InspectionProvider with ChangeNotifier {
         id: inspection.id,
         restaurantId: inspection.restaurantId,
         restaurantName: inspection.restaurantName,
+        inspectorId: inspection.inspectorId,
         inspectionDate: inspection.inspectionDate,
         status: status,
         score: overallScore,
         nextInspectionDate: nextInspection,
+        createdAt: inspection.createdAt,
+        updatedAt: DateTime.now(),
         checklistItems: inspection.checklistItems,
       );
     }
@@ -352,8 +328,11 @@ class InspectionProvider with ChangeNotifier {
       id: 'insp_${DateTime.now().millisecondsSinceEpoch}',
       restaurantId: restaurantId,
       restaurantName: restaurantName,
+      inspectorId: 'inspector_1', // Default inspector for now
       inspectionDate: DateTime.now(),
       status: 'pending',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
       checklistItems: _checklistTemplate,
     );
 

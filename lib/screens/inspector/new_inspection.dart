@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../providers/inspection_provider.dart';
 import '../../providers/restaurant_provider.dart';
+import '../../models/inspection.dart';
 
 class NewInspectionScreen extends StatefulWidget {
   final String? inspectionId;
@@ -356,7 +357,7 @@ class _NewInspectionScreenState extends State<NewInspectionScreen> {
             children: [
               Expanded(
                 child: Text(
-                  item.text,
+                  item.itemText,
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                     color: item.isCritical ? Colors.red.shade700 : Colors.black,

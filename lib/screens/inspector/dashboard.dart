@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/inspection_provider.dart';
+import '../../providers/report_provider.dart';
+import '../../models/inspection.dart';
 import 'new_inspection.dart';
 
 class InspectorDashboard extends StatefulWidget {
@@ -23,9 +25,12 @@ class _InspectorDashboardState extends State<InspectorDashboard> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final inspectionProvider = Provider.of<InspectionProvider>(context);
+    final reportProvider = Provider.of<ReportProvider>(context);
     
-    final pendingInspections = inspectionProvider.getPendingInspections();
-    final completedInspections = inspectionProvider.getCompletedInspections();
+    final pendingInspections = inspectionProvider.getPendingInspections() as List<Inspection>;
+    final completedInspections = inspectionProvider.getCompletedInspections() as List<Inspection>;
+    final pendingReports = reportProvider.getPendingReports();
+    final reportsNeedingAnalysis = reportProvider.getReportsNeedingAIAnalysis();
 
     return Scaffold(
       appBar: AppBar(
@@ -84,9 +89,7 @@ class _InspectorDashboardState extends State<InspectorDashboard> {
           ),
         ],
       ),
-      body: _selectedIndex == 0 
-          ? _buildDashboard(pendingInspections, completedInspections)
-          : _buildCompletedInspections(completedInspections),
+      body: _getSelectedScreen(_selectedIndex, pendingInspections, completedInspections, pendingReports, reportsNeedingAnalysis),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
@@ -97,11 +100,15 @@ class _InspectorDashboardState extends State<InspectorDashboard> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+            label: 'Inspections',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
             label: 'History',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.report),
+            label: 'Citizen Reports',
           ),
         ],
       ),
@@ -120,7 +127,7 @@ class _InspectorDashboardState extends State<InspectorDashboard> {
     );
   }
 
-  Widget _buildDashboard(List<Inspection> pending, List<Inspection> completed) {
+  Widget _buildDashboard(List<dynamic> pending, List<dynamic> completed) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -295,7 +302,7 @@ class _InspectorDashboardState extends State<InspectorDashboard> {
     );
   }
 
-  Widget _buildInspectionCard(Inspection inspection, bool isCompleted) {
+  Widget _buildInspectionCard(dynamic inspection, bool isCompleted) {
     Color getStatusColor(String status) {
       switch (status) {
         case 'completed':
@@ -404,7 +411,7 @@ class _InspectorDashboardState extends State<InspectorDashboard> {
     );
   }
 
-  Widget _buildCompletedInspections(List<Inspection> inspections) {
+  Widget _buildCompletedInspections(List<dynamic> inspections) {
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
       itemCount: inspections.length,
@@ -501,5 +508,326 @@ class _InspectorDashboardState extends State<InspectorDashboard> {
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
+  }
+
+  Widget _getSelectedScreen(int index, List pendingInspections, List completedInspections, List pendingReports, List reportsNeedingAnalysis) {
+    switch (index) {
+      case 0:
+        return _buildDashboard(pendingInspections, completedInspections);
+      case 1:
+        return _buildCompletedInspections(completedInspections);
+      case 2:
+        return _buildCitizenReports(pendingReports, reportsNeedingAnalysis);
+      default:
+        return _buildDashboard(pendingInspections, completedInspections);
+    }
+  }
+
+  Widget _buildCitizenReports(List pendingReports, List reportsNeedingAnalysis) {
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          const TabBar(
+            tabs: [
+              Tab(text: 'All Reports'),
+              Tab(text: 'Needs AI Analysis'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                _buildReportsList(pendingReports, 'All Pending Reports'),
+                _buildReportsList(reportsNeedingAnalysis, 'Reports Needing AI Analysis'),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReportsList(List reports, String emptyMessage) {
+    if (reports.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.report_off, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
+            Text(
+              emptyMessage,
+              style: const TextStyle(color: Colors.grey, fontSize: 16),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: reports.length,
+      itemBuilder: (context, index) {
+        final report = reports[index];
+        return Card(
+          margin: const EdgeInsets.only(bottom: 16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        report.title,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: _getReportTypeColor(report.type),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        report.type.replaceAll('_', ' ').toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Restaurant: ${report.restaurantName}',
+                  style: const TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Reported by: ${report.reporterName}',
+                  style: const TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 8),
+                Text(report.description),
+                if (report.imageUrls.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      const Icon(Icons.image, size: 16, color: Colors.blue),
+                      const SizedBox(width: 4),
+                      Text('${report.imageUrls.length} image(s) attached'),
+                    ],
+                  ),
+                ],
+                if (report.aiScore != null) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      const Icon(Icons.smart_toy, size: 16, color: Colors.green),
+                      const SizedBox(width: 4),
+                      Text('AI Score: ${report.aiScore!.toStringAsFixed(1)}'),
+                      const SizedBox(width: 8),
+                      Text('Confidence: ${(report.aiConfidence! * 100).toStringAsFixed(1)}%'),
+                    ],
+                  ),
+                  if (report.aiIssues.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'AI Issues: ${report.aiIssues.join(", ")}',
+                      style: const TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  ],
+                ],
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (report.imageUrls.isNotEmpty && report.aiScore == null)
+                      ElevatedButton.icon(
+                        onPressed: () => _analyzeReportWithAI(report.id),
+                        icon: const Icon(Icons.smart_toy),
+                        label: const Text('Analyze with AI'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                        ),
+                      ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () => _showReportDetails(report),
+                      child: const Text('View Details'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _analyzeReportWithAI(String reportId) async {
+    final reportProvider = Provider.of<ReportProvider>(context, listen: false);
+    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Analyzing images with YOLOv8 AI model...'),
+          ],
+        ),
+      ),
+    );
+
+    try {
+      await reportProvider.analyzeReportWithAI(reportId);
+      Navigator.of(context).pop(); // Close loading dialog
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('AI analysis completed successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      Navigator.of(context).pop(); // Close loading dialog
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('AI analysis failed: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _showReportDetails(dynamic report) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(report.title),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Restaurant: ${report.restaurantName}'),
+              Text('Reporter: ${report.reporterName}'),
+              Text('Type: ${report.type}'),
+              const SizedBox(height: 8),
+              Text('Description:'),
+              Text(report.description),
+              if (report.location != null && report.location!.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text('Location: ${report.location}'),
+              ],
+              if (report.imageUrls.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                const Text('Images:', style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(
+                  height: 100,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: report.imageUrls.length,
+                    itemBuilder: (context, index) {
+                      final imageUrl = report.imageUrls[index];
+                      return Container(
+                        width: 80,
+                        height: 80,
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: imageUrl.startsWith('http')
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: Image.network(
+                                imageUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.image, color: Colors.grey);
+                                },
+                              ),
+                            )
+                          : const Icon(Icons.image, color: Colors.grey),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+          ElevatedButton(
+            onPressed: () => _updateReportStatus(report.id, 'resolved'),
+            child: const Text('Mark as Resolved'),
+          ),
+          ElevatedButton(
+            onPressed: () => _updateReportStatus(report.id, 'rejected'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Reject'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _updateReportStatus(String reportId, String status) async {
+    final reportProvider = Provider.of<ReportProvider>(context, listen: false);
+    
+    try {
+      await reportProvider.updateReportStatus(reportId, status);
+      Navigator.of(context).pop(); // Close dialog
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Report marked as $status'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to update report: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Color _getReportTypeColor(String type) {
+    switch (type) {
+      case 'hygiene':
+        return Colors.blue;
+      case 'food_safety':
+        return Colors.red;
+      case 'pest_control':
+        return Colors.orange;
+      case 'staff_hygiene':
+        return Colors.purple;
+      case 'equipment':
+        return Colors.teal;
+      default:
+        return Colors.grey;
+    }
   }
 }

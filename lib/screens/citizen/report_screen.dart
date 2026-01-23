@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:food_safety_app/providers/report_provider.dart';
 import 'package:food_safety_app/providers/auth_provider.dart';
 
@@ -24,8 +28,88 @@ class _ReportScreenState extends State<ReportScreen> {
   final TextEditingController _locationController = TextEditingController();
   
   String _selectedType = 'hygiene';
-  List<String> _imageUrls = [];
+  List<XFile> _images = []; // Changed from _imageUrls to _images
+  List<Uint8List?> _imageBytes = []; // For web compatibility
   bool _isSubmitting = false;
+
+  final ImagePicker _picker = ImagePicker(); // Add image picker instance
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: source,
+        maxWidth: 1920,
+        maxHeight: 1080,
+        imageQuality: 80,
+      );
+      
+      if (image != null) {
+        // For web, read the bytes
+        Uint8List? bytes;
+        if (kIsWeb) {
+          bytes = await image.readAsBytes();
+        }
+        
+        setState(() {
+          _images.add(image);
+          _imageBytes.add(bytes);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Image added successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No image selected'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Image picker error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to pick image: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _showImageSourceDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Image Source'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Camera'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Gallery'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   final List<String> _reportTypes = [
     'hygiene',
@@ -198,7 +282,7 @@ class _ReportScreenState extends State<ReportScreen> {
               const SizedBox(height: 12),
 
               // Image Grid
-              if (_imageUrls.isNotEmpty)
+              if (_images.isNotEmpty)
                 GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -207,18 +291,54 @@ class _ReportScreenState extends State<ReportScreen> {
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
                   ),
-                  itemCount: _imageUrls.length,
+                  itemCount: _images.length,
                   itemBuilder: (context, index) {
                     return Stack(
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            image: DecorationImage(
-                              image: NetworkImage(_imageUrls[index]),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: kIsWeb
+                            ? (_imageBytes[index] != null
+                                ? Image.memory(
+                                    _imageBytes[index]!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        color: Colors.grey[200],
+                                        child: const Icon(
+                                          Icons.broken_image,
+                                          color: Colors.grey,
+                                          size: 40,
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : Container(
+                                    color: Colors.grey[200],
+                                    child: const Icon(
+                                      Icons.image,
+                                      color: Colors.grey,
+                                      size: 40,
+                                    ),
+                                  ))
+                            : Image.file(
+                                File(_images[index].path),
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.grey[200],
+                                    child: const Icon(
+                                      Icons.broken_image,
+                                      color: Colors.grey,
+                                      size: 40,
+                                    ),
+                                  );
+                                },
+                              ),
                         ),
                         Positioned(
                           top: 4,
@@ -226,7 +346,8 @@ class _ReportScreenState extends State<ReportScreen> {
                           child: GestureDetector(
                             onTap: () {
                               setState(() {
-                                _imageUrls.removeAt(index);
+                                _images.removeAt(index);
+                                _imageBytes.removeAt(index);
                               });
                             },
                             child: Container(
@@ -250,12 +371,7 @@ class _ReportScreenState extends State<ReportScreen> {
 
               // Add Photo Button
               ElevatedButton.icon(
-                onPressed: () {
-                  // Mock adding an image (in real app, use image_picker)
-                  setState(() {
-                    _imageUrls.add('https://example.com/report_${_imageUrls.length + 1}.jpg');
-                  });
-                },
+                onPressed: _showImageSourceDialog,
                 icon: const Icon(Icons.add_photo_alternate),
                 label: const Text('Add Photo'),
                 style: ElevatedButton.styleFrom(
@@ -295,7 +411,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                 title: _titleController.text,
                                 description: _descriptionController.text,
                                 type: _selectedType,
-                                imageUrls: _imageUrls,
+                                imageUrls: _images.map((image) => image.path).toList(),
                                 location: _locationController.text.isNotEmpty
                                     ? _locationController.text
                                     : null,

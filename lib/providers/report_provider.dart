@@ -148,9 +148,6 @@ class ReportProvider with ChangeNotifier {
         description: 'Found insects and food debris in the kitchen area. Utensils were not properly cleaned. Staff not wearing gloves while handling food.',
         type: 'hygiene',
         imageUrls: ['https://example.com/image1.jpg'],
-        aiScore: 65.0,
-        aiConfidence: 0.85,
-        aiIssues: ['Food debris detected (75%)', 'Surface cleanliness issue (65%)'],
         status: 'pending',
         createdAt: DateTime.now().subtract(const Duration(days: 1)),
         location: 'Mumbai Central',
@@ -202,9 +199,6 @@ class ReportProvider with ChangeNotifier {
         description: 'Saw a rodent near the food storage area. This is a serious health violation that needs immediate attention.',
         type: 'pest_control',
         imageUrls: ['https://example.com/image4.jpg'],
-        aiScore: 35.0,
-        aiConfidence: 0.95,
-        aiIssues: ['Pest activity detected (95%)', 'Storage violation (85%)'],
         status: 'pending',
         createdAt: DateTime.now().subtract(const Duration(hours: 12)),
         location: 'Mumbai Central',
@@ -233,25 +227,7 @@ class ReportProvider with ChangeNotifier {
     try {
       await Future.delayed(const Duration(seconds: 2));
 
-      // Simulate AI analysis
-      double? aiScore;
-      double? aiConfidence;
-      List<String> aiIssues = [];
-
-      if (imageUrls.isNotEmpty) {
-        // Mock AI analysis
-        aiScore = 60 + (DateTime.now().millisecond % 40).toDouble(); // 60-100
-        aiConfidence = 0.7 + (DateTime.now().second % 30) / 100; // 0.7-1.0
-        
-        if (aiScore < 70) {
-          aiIssues = [
-            'Food debris detected (${(70 + DateTime.now().millisecond % 25)}%)',
-            'Surface cleanliness needs improvement (${(60 + DateTime.now().millisecond % 30)}%)',
-            'Staff hygiene violation (${(65 + DateTime.now().millisecond % 20)}%)',
-          ];
-        }
-      }
-
+      // Don't automatically analyze - let inspector do it manually
       final newReport = Report(
         id: 'rep_${DateTime.now().millisecondsSinceEpoch}',
         restaurantId: restaurantId,
@@ -262,9 +238,6 @@ class ReportProvider with ChangeNotifier {
         description: description,
         type: type,
         imageUrls: imageUrls,
-        aiScore: aiScore,
-        aiConfidence: aiConfidence,
-        aiIssues: aiIssues,
         status: 'pending',
         createdAt: DateTime.now(),
         location: location,
@@ -423,5 +396,72 @@ class ReportProvider with ChangeNotifier {
   List<Report> getRecentReports({int limit = 5}) {
     _reports.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return _reports.take(limit).toList();
+  }
+
+  // Get pending reports for inspector review
+  List<Report> getPendingReports() {
+    return getReportsByStatus('pending');
+  }
+
+  // Get reports requiring AI analysis
+  List<Report> getReportsNeedingAIAnalysis() {
+    return _reports.where((r) => 
+      r.status == 'pending' && 
+      r.imageUrls.isNotEmpty && 
+      (r.aiScore == null || r.aiConfidence == null)
+    ).toList();
+  }
+
+  // Analyze report images with AI (simulated YOLOv8)
+  Future<void> analyzeReportWithAI(String reportId) async {
+    final reportIndex = _reports.indexWhere((r) => r.id == reportId);
+    if (reportIndex == -1) return;
+
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      await Future.delayed(const Duration(seconds: 3)); // Simulate AI processing
+
+      // Simulate YOLOv8 analysis results
+      final random = DateTime.now().millisecond;
+      final aiScore = 40 + (random % 60); // 40-100 score
+      final aiConfidence = 0.6 + (random % 40) / 100; // 0.6-1.0 confidence
+
+      // Generate AI issues based on score
+      List<String> aiIssues = [];
+      if (aiScore < 60) {
+        aiIssues.addAll([
+          'Critical hygiene violations detected',
+          'Potential food contamination risk',
+          'Equipment sanitation issues identified',
+          'Staff hygiene non-compliance'
+        ]);
+      } else if (aiScore < 75) {
+        aiIssues.addAll([
+          'Minor cleanliness issues detected',
+          'Food storage practices need improvement',
+          'Surface cleaning required'
+        ]);
+      } else {
+        aiIssues.add('Food safety standards maintained');
+      }
+
+      // Update the report
+      _reports[reportIndex] = _reports[reportIndex].copyWith(
+        aiScore: aiScore.toDouble(),
+        aiConfidence: aiConfidence,
+        aiIssues: aiIssues,
+      );
+
+      _applyFilter(_currentFilter);
+      _isLoading = false;
+      notifyListeners();
+
+    } catch (e) {
+      _isLoading = false;
+      _error = 'AI analysis failed: $e';
+      notifyListeners();
+    }
   }
 }
