@@ -24,7 +24,7 @@ events:
       The output was:
       0
       MSBuild version 17.14.40+3e7442088 for .NET Framework
-      Build started 24-01-2026 00:25:52.
+      Build started 24-01-2026 00:50:42.
       
       Project "D:\\New Folder (2)\\food_safety_app\\build\\windows\\x64\\CMakeFiles\\3.31.6-msvc6\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
       PrepareForBuild:
@@ -53,7 +53,7 @@ events:
           0 Warning(s)
           0 Error(s)
       
-      Time Elapsed 00:00:00.56
+      Time Elapsed 00:00:00.46
       
       
       Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
@@ -72,8 +72,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "D:/New Folder (2)/food_safety_app/build/windows/x64/CMakeFiles/CMakeScratch/TryCompile-kd6hz4"
-      binary: "D:/New Folder (2)/food_safety_app/build/windows/x64/CMakeFiles/CMakeScratch/TryCompile-kd6hz4"
+      source: "D:/New Folder (2)/food_safety_app/build/windows/x64/CMakeFiles/CMakeScratch/TryCompile-1ze7r4"
+      binary: "D:/New Folder (2)/food_safety_app/build/windows/x64/CMakeFiles/CMakeScratch/TryCompile-1ze7r4"
     cmakeVariables:
       CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /W3 /GR /EHsc"
       CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
@@ -83,40 +83,40 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'D:/New Folder (2)/food_safety_app/build/windows/x64/CMakeFiles/CMakeScratch/TryCompile-kd6hz4'
+        Change Dir: 'D:/New Folder (2)/food_safety_app/build/windows/x64/CMakeFiles/CMakeScratch/TryCompile-1ze7r4'
         
-        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_12106.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_c265c.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.14.40+3e7442088 for .NET Framework
-        Build started 24-01-2026 00:25:53.
+        Build started 24-01-2026 00:50:43.
         
-        Project "D:\\New Folder (2)\\food_safety_app\\build\\windows\\x64\\CMakeFiles\\CMakeScratch\\TryCompile-kd6hz4\\cmTC_12106.vcxproj" on node 1 (default targets).
+        Project "D:\\New Folder (2)\\food_safety_app\\build\\windows\\x64\\CMakeFiles\\CMakeScratch\\TryCompile-1ze7r4\\cmTC_c265c.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_12106.dir\\Debug\\".
+          Creating directory "cmTC_c265c.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "D:\\New Folder (2)\\food_safety_app\\build\\windows\\x64\\CMakeFiles\\CMakeScratch\\TryCompile-kd6hz4\\Debug\\".
-          Creating directory "cmTC_12106.dir\\Debug\\cmTC_12106.tlog\\".
+          Creating directory "D:\\New Folder (2)\\food_safety_app\\build\\windows\\x64\\CMakeFiles\\CMakeScratch\\TryCompile-1ze7r4\\Debug\\".
+          Creating directory "cmTC_c265c.dir\\Debug\\cmTC_c265c.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_12106.dir\\Debug\\cmTC_12106.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_12106.dir\\Debug\\cmTC_12106.tlog\\unsuccessfulbuild".
+          Creating "cmTC_c265c.dir\\Debug\\cmTC_c265c.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_c265c.dir\\Debug\\cmTC_c265c.tlog\\unsuccessfulbuild".
         ClCompile:
-          C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_12106.dir\\Debug\\\\" /Fd"cmTC_12106.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_c265c.dir\\Debug\\\\" /Fd"cmTC_c265c.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.44.35222 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_12106.dir\\Debug\\\\" /Fd"cmTC_12106.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_c265c.dir\\Debug\\\\" /Fd"cmTC_c265c.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
           CMakeCXXCompilerABI.cpp
         Link:
-          C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\New Folder (2)\\food_safety_app\\build\\windows\\x64\\CMakeFiles\\CMakeScratch\\TryCompile-kd6hz4\\Debug\\cmTC_12106.exe" /INCREMENTAL /ILK:"cmTC_12106.dir\\Debug\\cmTC_12106.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/New Folder (2)/food_safety_app/build/windows/x64/CMakeFiles/CMakeScratch/TryCompile-kd6hz4/Debug/cmTC_12106.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/New Folder (2)/food_safety_app/build/windows/x64/CMakeFiles/CMakeScratch/TryCompile-kd6hz4/Debug/cmTC_12106.lib" /MACHINE:X64  /machine:x64 cmTC_12106.dir\\Debug\\CMakeCXXCompilerABI.obj
-          cmTC_12106.vcxproj -> D:\\New Folder (2)\\food_safety_app\\build\\windows\\x64\\CMakeFiles\\CMakeScratch\\TryCompile-kd6hz4\\Debug\\cmTC_12106.exe
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\New Folder (2)\\food_safety_app\\build\\windows\\x64\\CMakeFiles\\CMakeScratch\\TryCompile-1ze7r4\\Debug\\cmTC_c265c.exe" /INCREMENTAL /ILK:"cmTC_c265c.dir\\Debug\\cmTC_c265c.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/New Folder (2)/food_safety_app/build/windows/x64/CMakeFiles/CMakeScratch/TryCompile-1ze7r4/Debug/cmTC_c265c.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/New Folder (2)/food_safety_app/build/windows/x64/CMakeFiles/CMakeScratch/TryCompile-1ze7r4/Debug/cmTC_c265c.lib" /MACHINE:X64  /machine:x64 cmTC_c265c.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_c265c.vcxproj -> D:\\New Folder (2)\\food_safety_app\\build\\windows\\x64\\CMakeFiles\\CMakeScratch\\TryCompile-1ze7r4\\Debug\\cmTC_c265c.exe
         FinalizeBuildStatus:
-          Deleting file "cmTC_12106.dir\\Debug\\cmTC_12106.tlog\\unsuccessfulbuild".
-          Touching "cmTC_12106.dir\\Debug\\cmTC_12106.tlog\\cmTC_12106.lastbuildstate".
-        Done Building Project "D:\\New Folder (2)\\food_safety_app\\build\\windows\\x64\\CMakeFiles\\CMakeScratch\\TryCompile-kd6hz4\\cmTC_12106.vcxproj" (default targets).
+          Deleting file "cmTC_c265c.dir\\Debug\\cmTC_c265c.tlog\\unsuccessfulbuild".
+          Touching "cmTC_c265c.dir\\Debug\\cmTC_c265c.tlog\\cmTC_c265c.lastbuildstate".
+        Done Building Project "D:\\New Folder (2)\\food_safety_app\\build\\windows\\x64\\CMakeFiles\\CMakeScratch\\TryCompile-1ze7r4\\cmTC_c265c.vcxproj" (default targets).
         
         Build succeeded.
             0 Warning(s)
             0 Error(s)
         
-        Time Elapsed 00:00:00.44
+        Time Elapsed 00:00:00.45
         
       exitCode: 0
   -

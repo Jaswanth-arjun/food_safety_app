@@ -2,6 +2,7 @@ import 'package:food_guard/models/restaurant.dart';
 import 'package:food_guard/models/inspection.dart';
 import 'package:food_guard/models/report.dart';
 import 'package:food_guard/models/rating.dart';
+import 'package:food_guard/models/user_review.dart';
 
 class MockDataService {
   // Mock Restaurants
@@ -349,5 +350,74 @@ class MockDataService {
       'suggestions': suggestions.sublist(0, detectedIssues.isEmpty ? 2 : 3),
       'model_version': 'v1.2.0',
     };
+  }
+
+  // Mock User Reviews
+  static List<UserReview> getUserReviews() {
+    return [
+      UserReview(
+        id: 'review1',
+        restaurantId: '1',
+        userId: 'citizen1',
+        userName: 'Amit Singh',
+        rating: 4.5,
+        reviewText: 'Great food and excellent service! The hygiene standards are very good.',
+        createdAt: DateTime.now().subtract(const Duration(days: 7)),
+      ),
+      UserReview(
+        id: 'review2',
+        restaurantId: '1',
+        userId: 'citizen2',
+        userName: 'Priya Patel',
+        rating: 5.0,
+        reviewText: 'Absolutely amazing experience. Clean environment and delicious food.',
+        createdAt: DateTime.now().subtract(const Duration(days: 5)),
+      ),
+      UserReview(
+        id: 'review3',
+        restaurantId: '2',
+        userId: 'citizen3',
+        userName: 'Rahul Kumar',
+        rating: 3.5,
+        reviewText: 'Good food but could be cleaner. Staff was friendly though.',
+        createdAt: DateTime.now().subtract(const Duration(days: 10)),
+      ),
+      UserReview(
+        id: 'review4',
+        restaurantId: '2',
+        userId: 'citizen4',
+        userName: 'Sneha Gupta',
+        rating: 4.0,
+        reviewText: 'Nice ambiance and tasty dishes. Hygiene could be better.',
+        createdAt: DateTime.now().subtract(const Duration(days: 8)),
+      ),
+      UserReview(
+        id: 'review5',
+        restaurantId: '3',
+        userId: 'citizen5',
+        userName: 'Vikram Rao',
+        rating: 4.8,
+        reviewText: 'Perfect beachside dining! Very clean and great food quality.',
+        createdAt: DateTime.now().subtract(const Duration(days: 3)),
+      ),
+      UserReview(
+        id: 'review6',
+        restaurantId: '4',
+        userId: 'citizen6',
+        userName: 'Kavita Jain',
+        rating: 2.5,
+        reviewText: 'Food was okay but the place needs better cleaning.',
+        createdAt: DateTime.now().subtract(const Duration(days: 12)),
+      ),
+      UserReview(
+        id: 'review7',
+        restaurantId: '5',
+        userId: 'citizen7',
+        userName: 'Arjun Mehta',
+        rating: 4.2,
+        reviewText: 'Good variety of dishes. Clean and well-maintained restaurant.',
+        createdAt: DateTime.now().subtract(const Duration(days: 6)),
+      ),
+    ];
   }
 }

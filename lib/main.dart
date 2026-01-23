@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:food_guard/providers/auth_provider.dart';
 import 'package:food_guard/providers/restaurant_provider.dart';
+import 'package:food_guard/providers/rating_provider.dart';
 import 'package:food_guard/providers/report_provider.dart';
 import 'package:food_guard/providers/inspection_provider.dart';
 import 'package:food_guard/providers/activity_provider.dart';
@@ -11,11 +12,15 @@ import 'package:food_guard/screens/inspector/dashboard.dart';
 import 'package:food_guard/screens/admin/admin_dashboard.dart'; // Add this import
 
 void main() {
+  // Initialize providers
+  final ratingProvider = RatingProvider();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => RestaurantProvider()),
+        ChangeNotifierProvider(create: (_) => ratingProvider),
+        ChangeNotifierProvider(create: (_) => RestaurantProvider(ratingProvider: ratingProvider)),
         ChangeNotifierProvider(create: (_) => ReportProvider()),
         ChangeNotifierProvider(create: (_) => InspectionProvider()),
         ChangeNotifierProvider(create: (_) => ActivityProvider()),

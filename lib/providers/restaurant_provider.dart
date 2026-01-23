@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import '../models/restaurant.dart';
+import 'rating_provider.dart';
 
 class RestaurantProvider with ChangeNotifier {
   List<Restaurant> _restaurants = [];
   bool _isLoading = false;
   String? _error;
+  RatingProvider? _ratingProvider;
 
   List<Restaurant> get restaurants => _restaurants;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
   // Initialize with mock data
-  RestaurantProvider() {
+  RestaurantProvider({RatingProvider? ratingProvider}) {
+    _ratingProvider = ratingProvider;
     _initializeMockData();
   }
 
@@ -26,6 +29,8 @@ class RestaurantProvider with ChangeNotifier {
         lastInspectionScore: 85,
         lastInspectionDate: DateTime.now().subtract(const Duration(days: 15)),
         createdAt: DateTime.now().subtract(const Duration(days: 365)),
+        userRating: _ratingProvider?.getAverageRating('1') ?? 0.0,
+        userReviewCount: _ratingProvider?.getReviewCount('1') ?? 0,
       ),
       Restaurant(
         id: '2',
@@ -36,6 +41,8 @@ class RestaurantProvider with ChangeNotifier {
         lastInspectionScore: 92,
         lastInspectionDate: DateTime.now().subtract(const Duration(days: 30)),
         createdAt: DateTime.now().subtract(const Duration(days: 300)),
+        userRating: _ratingProvider?.getAverageRating('2') ?? 0.0,
+        userReviewCount: _ratingProvider?.getReviewCount('2') ?? 0,
       ),
       Restaurant(
         id: '3',
@@ -46,6 +53,8 @@ class RestaurantProvider with ChangeNotifier {
         lastInspectionScore: 45,
         lastInspectionDate: DateTime.now().subtract(const Duration(days: 60)),
         createdAt: DateTime.now().subtract(const Duration(days: 250)),
+        userRating: _ratingProvider?.getAverageRating('3') ?? 0.0,
+        userReviewCount: _ratingProvider?.getReviewCount('3') ?? 0,
       ),
       Restaurant(
         id: '4',
@@ -56,6 +65,8 @@ class RestaurantProvider with ChangeNotifier {
         lastInspectionScore: 78,
         lastInspectionDate: DateTime.now().subtract(const Duration(days: 10)),
         createdAt: DateTime.now().subtract(const Duration(days: 200)),
+        userRating: _ratingProvider?.getAverageRating('4') ?? 0.0,
+        userReviewCount: _ratingProvider?.getReviewCount('4') ?? 0,
       ),
       Restaurant(
         id: '5',
@@ -66,6 +77,8 @@ class RestaurantProvider with ChangeNotifier {
         lastInspectionScore: 65,
         lastInspectionDate: DateTime.now().subtract(const Duration(days: 45)),
         createdAt: DateTime.now().subtract(const Duration(days: 150)),
+        userRating: _ratingProvider?.getAverageRating('5') ?? 0.0,
+        userReviewCount: _ratingProvider?.getReviewCount('5') ?? 0,
       ),
     ];
   }
@@ -137,6 +150,21 @@ class RestaurantProvider with ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       _error = 'Failed to delete restaurant: $e';
+      notifyListeners();
+    }
+  }
+
+  // Update restaurant rating
+  void updateRestaurantRating(String restaurantId) {
+    final index = _restaurants.indexWhere((r) => r.id == restaurantId);
+    if (index != -1) {
+      final userRating = _ratingProvider?.getAverageRating(restaurantId) ?? 0.0;
+      final userReviewCount = _ratingProvider?.getReviewCount(restaurantId) ?? 0;
+
+      _restaurants[index] = _restaurants[index].copyWith(
+        userRating: userRating,
+        userReviewCount: userReviewCount,
+      );
       notifyListeners();
     }
   }

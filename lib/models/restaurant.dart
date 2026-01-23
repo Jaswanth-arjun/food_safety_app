@@ -18,6 +18,9 @@ class Restaurant {
   final double? longitude;
   final bool? isActive;
   final DateTime? updatedAt;
+  // User rating fields
+  final double? userRating; // Average user rating (1-5)
+  final int? userReviewCount; // Number of user reviews
 
   Restaurant({
     required this.id,
@@ -39,6 +42,8 @@ class Restaurant {
     this.longitude,
     this.isActive,
     this.updatedAt,
+    this.userRating,
+    this.userReviewCount,
   });
 
   // Formatted date for display
@@ -83,6 +88,8 @@ class Restaurant {
     double? longitude,
     bool? isActive,
     DateTime? updatedAt,
+    double? userRating,
+    int? userReviewCount,
   }) {
     return Restaurant(
       id: id ?? this.id,
@@ -104,6 +111,8 @@ class Restaurant {
       longitude: longitude ?? this.longitude,
       isActive: isActive ?? this.isActive,
       updatedAt: updatedAt ?? this.updatedAt,
+      userRating: userRating ?? this.userRating,
+      userReviewCount: userReviewCount ?? this.userReviewCount,
     );
   }
 }

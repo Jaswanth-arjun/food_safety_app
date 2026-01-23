@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import '../../providers/restaurant_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/report_provider.dart';
+import '../../providers/rating_provider.dart';
 import '../../models/restaurant.dart';
+import '../../models/user_review.dart';
 import 'report_screen.dart';
 import '../profile_screen.dart';
 import '../settings_screen.dart';
@@ -30,11 +32,170 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
     await authProvider.logout();
   }
 
+  void _showRestaurantSelectionDialog(BuildContext context) {
+    final restaurantProvider = Provider.of<RestaurantProvider>(context, listen: false);
+    final ratingProvider = Provider.of<RatingProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Restaurant to Rate'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: restaurantProvider.restaurants.length,
+            itemBuilder: (context, index) {
+              final restaurant = restaurantProvider.restaurants[index] as Restaurant;
+              debugPrint('Restaurant type: ${restaurant.runtimeType}');
+              debugPrint('Restaurant id: ${restaurant.id}');
+              final hasReviewed = ratingProvider.hasUserReviewed(restaurant.id, authProvider.currentUser?['id'] ?? '');
+
+              return ListTile(
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: _getRatingColor(_getRestaurantRating(restaurant)),
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      _getRestaurantRating(restaurant).toStringAsFixed(1),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+                title: Text(restaurant.name),
+                subtitle: Text(restaurant.address),
+                trailing: hasReviewed ? const Icon(Icons.check_circle, color: Colors.green) : null,
+                onTap: () {
+                  Navigator.pop(context);
+                  _showRatingDialog(context, restaurant, ratingProvider, authProvider);
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRatingDialog(BuildContext context, Restaurant restaurant, RatingProvider ratingProvider, AuthProvider authProvider) {
+    double selectedRating = 3.0;
+    final TextEditingController reviewController = TextEditingController();
+    final currentUser = authProvider.currentUser;
+    final existingReview = ratingProvider.getUserReview(restaurant.id, currentUser?['id'] ?? '');
+
+    if (existingReview != null) {
+      selectedRating = existingReview.rating;
+      reviewController.text = existingReview.reviewText ?? '';
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text(existingReview != null ? 'Update Your Review' : 'Rate ${restaurant.name}'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('How would you rate this restaurant?'),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(5, (index) {
+                  final starRating = index + 1;
+                  return IconButton(
+                    icon: Icon(
+                      starRating <= selectedRating ? Icons.star : Icons.star_border,
+                      color: Colors.amber,
+                      size: 32,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        selectedRating = starRating.toDouble();
+                      });
+                    },
+                  );
+                }),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: reviewController,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  labelText: 'Write a review (optional)',
+                  border: OutlineInputBorder(),
+                  hintText: 'Share your experience...',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (currentUser == null) return;
+
+                final review = UserReview(
+                  id: existingReview?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+                  restaurantId: restaurant.id,
+                  userId: currentUser['id'],
+                  userName: currentUser['name'] ?? currentUser['fullName'] ?? 'Anonymous',
+                  rating: selectedRating,
+                  reviewText: reviewController.text.trim().isEmpty ? null : reviewController.text.trim(),
+                  createdAt: existingReview?.createdAt ?? DateTime.now(),
+                  updatedAt: DateTime.now(),
+                );
+
+                final success = await ratingProvider.addReview(review);
+                if (success && context.mounted) {
+                  // Update restaurant rating
+                  final restaurantProvider = Provider.of<RestaurantProvider>(context, listen: false);
+                  restaurantProvider.updateRestaurantRating(restaurant.id);
+
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(existingReview != null ? 'Review updated successfully!' : 'Thank you for your review!'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              },
+              child: Text(existingReview != null ? 'Update Review' : 'Submit Review'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final restaurantProvider = Provider.of<RestaurantProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
     final reportProvider = Provider.of<ReportProvider>(context);
+    final ratingProvider = Provider.of<RatingProvider>(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -258,19 +419,16 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
                       color: Color(0xFF2563EB),
                     ),
                   )
-                : _buildRestaurantList(restaurantProvider, reportProvider),
+                : _buildRestaurantList(restaurantProvider, reportProvider, ratingProvider),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ReportScreen()),
-          );
+          _showRestaurantSelectionDialog(context);
         },
-        icon: const Icon(Icons.add),
-        label: const Text('Report Issue'),
+        icon: const Icon(Icons.star),
+        label: const Text('Rate Restaurant'),
         backgroundColor: const Color(0xFF2563EB),
       ),
     );
@@ -331,7 +489,7 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
     );
   }
 
-  Widget _buildRestaurantList(RestaurantProvider restaurantProvider, ReportProvider reportProvider) {
+  Widget _buildRestaurantList(RestaurantProvider restaurantProvider, ReportProvider reportProvider, RatingProvider ratingProvider) {
     final filteredRestaurants = restaurantProvider.restaurants
         .where((restaurant) =>
             restaurant.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
@@ -402,7 +560,8 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
               borderRadius: BorderRadius.circular(16),
               onTap: () {
                 final reportProvider = Provider.of<ReportProvider>(context, listen: false);
-                _showRestaurantDetails(context, restaurant, reportProvider);
+                final ratingProvider = Provider.of<RatingProvider>(context, listen: false);
+                _showRestaurantDetails(context, restaurant, reportProvider, ratingProvider);
               },
               child: Padding(
                 padding: const EdgeInsets.all(20),
@@ -504,6 +663,10 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
 
   // Helper methods for restaurant data
   double _getRestaurantRating(Restaurant restaurant) {
+    // Use user rating if available, otherwise fall back to inspection score
+    if (restaurant.userRating != null && restaurant.userRating! > 0) {
+      return restaurant.userRating!;
+    }
     return (restaurant.lastInspectionScore ?? 0) / 20.0; // Convert 0-100 to 0-5 scale
   }
 
@@ -573,7 +736,7 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
     );
   }
 
-  void _showRestaurantDetails(BuildContext context, Restaurant restaurant, ReportProvider reportProvider) {
+  void _showRestaurantDetails(BuildContext context, Restaurant restaurant, ReportProvider reportProvider, RatingProvider ratingProvider) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -721,6 +884,20 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
 
                     const SizedBox(height: 32),
 
+                    // User Reviews Section
+                    if (restaurant.userReviewCount != null && restaurant.userReviewCount! > 0) ...[
+                      const Text(
+                        'User Reviews',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildReviewsSection(restaurant, ratingProvider),
+                      const SizedBox(height: 32),
+                    ],
+
                     // Action Buttons
                     Row(
                       children: [
@@ -754,10 +931,12 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              // Navigate to restaurant details/reviews
+                              Navigator.pop(context);
+                              final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                              _showRatingDialog(context, restaurant, ratingProvider, authProvider);
                             },
-                            icon: const Icon(Icons.info_outline),
-                            label: const Text('View Details'),
+                            icon: const Icon(Icons.star),
+                            label: const Text('Rate Restaurant'),
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               backgroundColor: const Color(0xFF2563EB),
@@ -777,6 +956,86 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildReviewsSection(Restaurant restaurant, RatingProvider ratingProvider) {
+    final reviews = ratingProvider.getReviewsForRestaurant(restaurant.id);
+    final displayReviews = reviews.take(3); // Show only first 3 reviews
+
+    return Column(
+      children: displayReviews.map((review) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey[200]!),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    review.userName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const Spacer(),
+                  Row(
+                    children: List.generate(5, (index) {
+                      return Icon(
+                        index < review.rating ? Icons.star : Icons.star_border,
+                        size: 16,
+                        color: Colors.amber,
+                      );
+                    }),
+                  ),
+                ],
+              ),
+              if (review.reviewText != null && review.reviewText!.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text(
+                  review.reviewText!,
+                  style: TextStyle(
+                    color: Colors.grey[700],
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 4),
+              Text(
+                _formatReviewDate(review.createdAt),
+                style: TextStyle(
+                  color: Colors.grey[500],
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  String _formatReviewDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays == 0) {
+      return 'Today';
+    } else if (difference.inDays == 1) {
+      return 'Yesterday';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inDays < 30) {
+      return '${(difference.inDays / 7).floor()} weeks ago';
+    } else {
+      return '${(difference.inDays / 30).floor()} months ago';
+    }
   }
 
   Widget _buildDetailStat(BuildContext context, String title, String value, IconData icon, Color color) {
