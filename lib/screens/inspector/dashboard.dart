@@ -7,6 +7,7 @@ import '../../models/inspection.dart';
 import 'new_inspection.dart';
 import '../profile_screen.dart';
 import '../settings_screen.dart';
+import 'dart:io';
 
 class InspectorDashboard extends StatefulWidget {
   const InspectorDashboard({super.key});
@@ -332,6 +333,8 @@ class _InspectorDashboardState extends State<InspectorDashboard> {
                 builder: (context) => NewInspectionScreen(inspectionId: inspection.id),
               ),
             );
+          } else {
+            _showInspectionDetails(inspection);
           }
         },
         borderRadius: BorderRadius.circular(12),
@@ -757,18 +760,24 @@ class _InspectorDashboardState extends State<InspectorDashboard> {
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: imageUrl.startsWith('http')
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(6),
-                              child: Image.network(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: imageUrl.startsWith('http') || imageUrl.startsWith('https')
+                            ? Image.network(
                                 imageUrl,
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(Icons.image, color: Colors.grey);
+                                  return const Icon(Icons.broken_image, color: Colors.grey);
+                                },
+                              )
+                            : Image.file(
+                                File(imageUrl),
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.broken_image, color: Colors.grey);
                                 },
                               ),
-                            )
-                          : const Icon(Icons.image, color: Colors.grey),
+                        ),
                       );
                     },
                   ),
@@ -817,6 +826,86 @@ class _InspectorDashboardState extends State<InspectorDashboard> {
         ),
       );
     }
+  }
+
+  void _showInspectionDetails(dynamic inspection) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            const Text('Inspection Details'),
+            const Spacer(),
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => Navigator.of(context).pop(),
+              tooltip: 'Close',
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Restaurant: ${inspection.restaurantName}',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              Text('Date: ${_formatDate(inspection.inspectionDate)}'),
+              Text('Status: ${inspection.status.toUpperCase()}'),
+              if (inspection.score != null) ...[
+                const SizedBox(height: 8),
+                Text('Score: ${inspection.score!.toStringAsFixed(1)}/100'),
+              ],
+              if (inspection.notes != null && inspection.notes!.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                const Text('Notes:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(inspection.notes!),
+              ],
+              const SizedBox(height: 12),
+              Text('Checklist Items: ${inspection.checklistItems.length}'),
+              const SizedBox(height: 8),
+              ...inspection.checklistItems.take(3).map((item) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  children: [
+                    Icon(
+                      item.compliance == 'compliant' ? Icons.check_circle :
+                      item.compliance == 'non_compliant' ? Icons.cancel :
+                      Icons.warning,
+                      color: item.compliance == 'compliant' ? Colors.green :
+                             item.compliance == 'non_compliant' ? Colors.red :
+                             Colors.orange,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        item.itemText,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+              if (inspection.checklistItems.length > 3)
+                Text(
+                  '... and ${inspection.checklistItems.length - 3} more items',
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
   }
 
   Color _getReportTypeColor(String type) {
