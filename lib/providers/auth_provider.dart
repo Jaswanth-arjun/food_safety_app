@@ -40,6 +40,173 @@ class AuthProvider with ChangeNotifier {
     return true;
   }
 
+  // Citizen Registration (normal registration)
+  Future<bool> registerCitizen({
+    required String email,
+    required String password,
+    required String fullName,
+    required String phoneNumber,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Check if email already exists
+    final existingUser = _allUsers.firstWhere(
+      (user) => user['email'] == email,
+      orElse: () => {},
+    );
+
+    if (existingUser.isNotEmpty) {
+      _error = 'Email already registered';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+
+    // Create new citizen user
+    final newUser = {
+      'id': 'citizen_${DateTime.now().millisecondsSinceEpoch}',
+      'email': email,
+      'name': fullName,
+      'fullName': fullName,
+      'role': 'citizen',
+      'phoneNumber': phoneNumber,
+      'isActive': true,
+      'isVerified': false,
+      'createdAt': DateTime.now().toIso8601String(),
+    };
+
+    _allUsers.add(newUser);
+    _user = newUser;
+
+    _isLoading = false;
+    notifyListeners();
+    return true;
+  }
+
+  // Inspector Registration (requires special registration code)
+  Future<bool> registerInspector({
+    required String email,
+    required String password,
+    required String fullName,
+    required String phoneNumber,
+    required String registrationCode,
+    required String department,
+    required String licenseNumber,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Validate registration code (mock validation)
+    const validCodes = ['INSPECTOR2024', 'FSSAI2024', 'FOODSAFE2024'];
+    if (!validCodes.contains(registrationCode)) {
+      _error = 'Invalid registration code. Please contact FSSAI administration.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+
+    // Check if email already exists
+    final existingUser = _allUsers.firstWhere(
+      (user) => user['email'] == email,
+      orElse: () => {},
+    );
+
+    if (existingUser.isNotEmpty) {
+      _error = 'Email already registered';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+
+    // Create new inspector user
+    final newUser = {
+      'id': 'inspector_${DateTime.now().millisecondsSinceEpoch}',
+      'email': email,
+      'name': fullName,
+      'fullName': fullName,
+      'role': 'inspector',
+      'phoneNumber': phoneNumber,
+      'department': department,
+      'licenseNumber': licenseNumber,
+      'isActive': true,
+      'isVerified': true, // Auto-verified for inspectors
+      'createdAt': DateTime.now().toIso8601String(),
+    };
+
+    _allUsers.add(newUser);
+    _user = newUser;
+
+    _isLoading = false;
+    notifyListeners();
+    return true;
+  }
+
+  // Admin Registration (requires admin approval or special code)
+  Future<bool> registerAdmin({
+    required String email,
+    required String password,
+    required String fullName,
+    required String phoneNumber,
+    required String adminCode,
+    required String organization,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Validate admin code (mock validation)
+    const validAdminCodes = ['ADMIN2024', 'SUPERADMIN', 'FSSAISUPER'];
+    if (!validAdminCodes.contains(adminCode)) {
+      _error = 'Invalid admin registration code. Access denied.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+
+    // Check if email already exists
+    final existingUser = _allUsers.firstWhere(
+      (user) => user['email'] == email,
+      orElse: () => {},
+    );
+
+    if (existingUser.isNotEmpty) {
+      _error = 'Email already registered';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+
+    // Create new admin user
+    final newUser = {
+      'id': 'admin_${DateTime.now().millisecondsSinceEpoch}',
+      'email': email,
+      'name': fullName,
+      'fullName': fullName,
+      'role': 'admin',
+      'phoneNumber': phoneNumber,
+      'organization': organization,
+      'isActive': true,
+      'isVerified': true, // Auto-verified for admins
+      'createdAt': DateTime.now().toIso8601String(),
+    };
+
+    _allUsers.add(newUser);
+    _user = newUser;
+
+    _isLoading = false;
+    notifyListeners();
+    return true;
+  }
+
   Future<void> logout() async {
     _user = null;
     _error = null;
