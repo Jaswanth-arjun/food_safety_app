@@ -7,6 +7,17 @@ class Restaurant {
   final int? lastInspectionScore;
   final DateTime? lastInspectionDate;
   final DateTime createdAt;
+  final String? city;
+  final String? state;
+  final String? postalCode;
+  final String? country;
+  final String? phoneNumber;
+  final String? email;
+  final String? ownerName;
+  final double? latitude;
+  final double? longitude;
+  final bool? isActive;
+  final DateTime? updatedAt;
 
   Restaurant({
     required this.id,
@@ -17,6 +28,17 @@ class Restaurant {
     this.lastInspectionScore,
     this.lastInspectionDate,
     required this.createdAt,
+    this.city,
+    this.state,
+    this.postalCode,
+    this.country,
+    this.phoneNumber,
+    this.email,
+    this.ownerName,
+    this.latitude,
+    this.longitude,
+    this.isActive,
+    this.updatedAt,
   });
 
   // Formatted date for display
@@ -50,6 +72,17 @@ class Restaurant {
     int? lastInspectionScore,
     DateTime? lastInspectionDate,
     DateTime? createdAt,
+    String? city,
+    String? state,
+    String? postalCode,
+    String? country,
+    String? phoneNumber,
+    String? email,
+    String? ownerName,
+    double? latitude,
+    double? longitude,
+    bool? isActive,
+    DateTime? updatedAt,
   }) {
     return Restaurant(
       id: id ?? this.id,
@@ -60,6 +93,17 @@ class Restaurant {
       lastInspectionScore: lastInspectionScore ?? this.lastInspectionScore,
       lastInspectionDate: lastInspectionDate ?? this.lastInspectionDate,
       createdAt: createdAt ?? this.createdAt,
+      city: city ?? this.city,
+      state: state ?? this.state,
+      postalCode: postalCode ?? this.postalCode,
+      country: country ?? this.country,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      email: email ?? this.email,
+      ownerName: ownerName ?? this.ownerName,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      isActive: isActive ?? this.isActive,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }

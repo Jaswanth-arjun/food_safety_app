@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CustomBuild Include="C:\Users\tejan\food_safety_app\build\windows\x64\CMakeFiles\b8b82db9e3221b79348eaf5be653fa43\generate.stamp.rule">
+    <CustomBuild Include="D:\New Folder (2)\food_safety_app\build\windows\x64\CMakeFiles\5d2a0e7c18d1f5416bbb2aec739fd777\generate.stamp.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="CMake Rules">
-      <UniqueIdentifier>{1F1E4CD5-1E84-39CB-8AB3-0A994C0FB5CA}</UniqueIdentifier>
+      <UniqueIdentifier>{9FD8F7B0-1580-31DE-8233-1ED484C3921D}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

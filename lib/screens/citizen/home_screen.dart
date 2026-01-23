@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/restaurant_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../models/restaurant.dart';
 import 'report_screen.dart';
 
@@ -18,11 +19,12 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
   @override
   void initState() {
     super.initState();
-    _loadRestaurants();
+    // Restaurants are already loaded in provider constructor
   }
 
-  Future<void> _loadRestaurants() async {
-    await Provider.of<RestaurantProvider>(context, listen: false).fetchRestaurants();
+  void _logout(BuildContext context) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await authProvider.logout();
   }
 
   @override
@@ -38,11 +40,52 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
               // Navigate to notifications
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              // Navigate to profile
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              switch (value) {
+                case 'profile':
+                  // Navigate to profile
+                  break;
+                case 'settings':
+                  // Navigate to settings
+                  break;
+                case 'logout':
+                  _logout(context);
+                  break;
+              }
             },
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'profile',
+                child: Row(
+                  children: [
+                    Icon(Icons.person, size: 20),
+                    SizedBox(width: 8),
+                    Text('Profile'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'settings',
+                child: Row(
+                  children: [
+                    Icon(Icons.settings, size: 20),
+                    SizedBox(width: 8),
+                    Text('Settings'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, size: 20),
+                    SizedBox(width: 8),
+                    Text('Logout'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),

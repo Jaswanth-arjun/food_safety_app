@@ -18,7 +18,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BD83744A-1858-3408-BF0E-4278F811163A}</ProjectGuid>
+    <ProjectGuid>{041D114B-AEC0-301A-BE2B-DB8762B4F013}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
     <Platform>x64</Platform>
@@ -50,19 +50,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\tejan\food_safety_app\build\windows\x64\runner\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\New Folder (2)\food_safety_app\build\windows\x64\runner\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">food_safety_app.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">food_safety_app</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">C:\Users\tejan\food_safety_app\build\windows\x64\runner\Profile\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">D:\New Folder (2)\food_safety_app\build\windows\x64\runner\Profile\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">food_safety_app.dir\Profile\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">food_safety_app</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\tejan\food_safety_app\build\windows\x64\runner\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\New Folder (2)\food_safety_app\build\windows\x64\runner\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">food_safety_app.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">food_safety_app</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
@@ -71,7 +71,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\tejan\food_safety_app\windows;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\New Folder (2)\food_safety_app\windows;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -94,10 +94,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_HAS_EXCEPTIONS=0;FLUTTER_VERSION=\"1.0.0+1\";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=0;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=1;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\tejan\food_safety_app\windows;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\New Folder (2)\food_safety_app\windows;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\tejan\food_safety_app\windows;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\New Folder (2)\food_safety_app\windows;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -105,25 +105,25 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>..\flutter\Debug\flutter_wrapper_app.lib;dwmapi.lib;..\plugins\file_selector_windows\Debug\file_selector_windows_plugin.lib;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>..\flutter\Debug\flutter_wrapper_app.lib;dwmapi.lib;..\plugins\file_selector_windows\Debug\file_selector_windows_plugin.lib;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/tejan/food_safety_app/build/windows/x64/runner/Debug/food_safety_app.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/tejan/food_safety_app/build/windows/x64/runner/Debug/food_safety_app.pdb</ProgramDataBaseFile>
+      <ImportLibrary>D:/New Folder (2)/food_safety_app/build/windows/x64/runner/Debug/food_safety_app.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/New Folder (2)/food_safety_app/build/windows/x64/runner/Debug/food_safety_app.pdb</ProgramDataBaseFile>
       <SubSystem>Windows</SubSystem>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Manifest>
-      <AdditionalManifestFiles>C:\Users\tejan\food_safety_app\windows\runner\runner.exe.manifest;</AdditionalManifestFiles>
+      <AdditionalManifestFiles>D:\New Folder (2)\food_safety_app\windows\runner\runner.exe.manifest;</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\tejan\food_safety_app\windows;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\New Folder (2)\food_safety_app\windows;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <DisableSpecificWarnings>"4100"</DisableSpecificWarnings>
@@ -147,10 +147,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_VERSION=\"1.0.0+1\";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=0;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=1;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR=\"Profile\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\tejan\food_safety_app\windows;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\New Folder (2)\food_safety_app\windows;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\tejan\food_safety_app\windows;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\New Folder (2)\food_safety_app\windows;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -158,25 +158,25 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>..\flutter\Profile\flutter_wrapper_app.lib;dwmapi.lib;..\plugins\file_selector_windows\Profile\file_selector_windows_plugin.lib;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>..\flutter\Profile\flutter_wrapper_app.lib;dwmapi.lib;..\plugins\file_selector_windows\Profile\file_selector_windows_plugin.lib;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/tejan/food_safety_app/build/windows/x64/runner/Profile/food_safety_app.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/tejan/food_safety_app/build/windows/x64/runner/Profile/food_safety_app.pdb</ProgramDataBaseFile>
+      <ImportLibrary>D:/New Folder (2)/food_safety_app/build/windows/x64/runner/Profile/food_safety_app.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/New Folder (2)/food_safety_app/build/windows/x64/runner/Profile/food_safety_app.pdb</ProgramDataBaseFile>
       <SubSystem>Windows</SubSystem>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Manifest>
-      <AdditionalManifestFiles>C:\Users\tejan\food_safety_app\windows\runner\runner.exe.manifest;</AdditionalManifestFiles>
+      <AdditionalManifestFiles>D:\New Folder (2)\food_safety_app\windows\runner\runner.exe.manifest;</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\tejan\food_safety_app\windows;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\New Folder (2)\food_safety_app\windows;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <DisableSpecificWarnings>"4100"</DisableSpecificWarnings>
@@ -200,10 +200,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_VERSION=\"1.0.0+1\";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=0;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=1;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\tejan\food_safety_app\windows;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\New Folder (2)\food_safety_app\windows;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\tejan\food_safety_app\windows;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\New Folder (2)\food_safety_app\windows;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\cpp_client_wrapper\include;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -211,28 +211,28 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>..\flutter\Release\flutter_wrapper_app.lib;dwmapi.lib;..\plugins\file_selector_windows\Release\file_selector_windows_plugin.lib;C:\Users\tejan\food_safety_app\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>..\flutter\Release\flutter_wrapper_app.lib;dwmapi.lib;..\plugins\file_selector_windows\Release\file_selector_windows_plugin.lib;D:\New Folder (2)\food_safety_app\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/tejan/food_safety_app/build/windows/x64/runner/Release/food_safety_app.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/tejan/food_safety_app/build/windows/x64/runner/Release/food_safety_app.pdb</ProgramDataBaseFile>
+      <ImportLibrary>D:/New Folder (2)/food_safety_app/build/windows/x64/runner/Release/food_safety_app.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/New Folder (2)/food_safety_app/build/windows/x64/runner/Release/food_safety_app.pdb</ProgramDataBaseFile>
       <SubSystem>Windows</SubSystem>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Manifest>
-      <AdditionalManifestFiles>C:\Users\tejan\food_safety_app\windows\runner\runner.exe.manifest;</AdditionalManifestFiles>
+      <AdditionalManifestFiles>D:\New Folder (2)\food_safety_app\windows\runner\runner.exe.manifest;</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\tejan\food_safety_app\windows\runner\CMakeLists.txt">
+    <CustomBuild Include="D:\New Folder (2)\food_safety_app\windows\runner\CMakeLists.txt">
       <UseUtf8Encoding>Always</UseUtf8Encoding>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/tejan/food_safety_app/windows/runner/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/New Folder (2)/food_safety_app/windows/runner/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/tejan/food_safety_app/windows -BC:/Users/tejan/food_safety_app/build/windows/x64 --check-stamp-file C:/Users/tejan/food_safety_app/build/windows/x64/runner/CMakeFiles/generate.stamp
+"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" "-SD:/New Folder (2)/food_safety_app/windows" "-BD:/New Folder (2)/food_safety_app/build/windows/x64" --check-stamp-file "D:/New Folder (2)/food_safety_app/build/windows/x64/runner/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -241,11 +241,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\tejan\food_safety_app\build\windows\x64\runner\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\New Folder (2)\food_safety_app\build\windows\x64\runner\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Building Custom Rule C:/Users/tejan/food_safety_app/windows/runner/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Building Custom Rule D:/New Folder (2)/food_safety_app/windows/runner/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">setlocal
-"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/tejan/food_safety_app/windows -BC:/Users/tejan/food_safety_app/build/windows/x64 --check-stamp-file C:/Users/tejan/food_safety_app/build/windows/x64/runner/CMakeFiles/generate.stamp
+"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" "-SD:/New Folder (2)/food_safety_app/windows" "-BD:/New Folder (2)/food_safety_app/build/windows/x64" --check-stamp-file "D:/New Folder (2)/food_safety_app/build/windows/x64/runner/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -254,11 +254,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">C:\Users\tejan\food_safety_app\build\windows\x64\runner\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">D:\New Folder (2)\food_safety_app\build\windows\x64\runner\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/tejan/food_safety_app/windows/runner/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/New Folder (2)/food_safety_app/windows/runner/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/tejan/food_safety_app/windows -BC:/Users/tejan/food_safety_app/build/windows/x64 --check-stamp-file C:/Users/tejan/food_safety_app/build/windows/x64/runner/CMakeFiles/generate.stamp
+"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" "-SD:/New Folder (2)/food_safety_app/windows" "-BD:/New Folder (2)/food_safety_app/build/windows/x64" --check-stamp-file "D:/New Folder (2)/food_safety_app/build/windows/x64/runner/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -267,38 +267,38 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\tejan\food_safety_app\build\windows\x64\runner\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\New Folder (2)\food_safety_app\build\windows\x64\runner\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\tejan\food_safety_app\windows\runner\flutter_window.cpp" />
-    <ClCompile Include="C:\Users\tejan\food_safety_app\windows\runner\main.cpp" />
-    <ClCompile Include="C:\Users\tejan\food_safety_app\windows\runner\utils.cpp" />
-    <ClCompile Include="C:\Users\tejan\food_safety_app\windows\runner\win32_window.cpp" />
-    <ClCompile Include="C:\Users\tejan\food_safety_app\windows\flutter\generated_plugin_registrant.cc" />
-    <ResourceCompile Include="C:\Users\tejan\food_safety_app\windows\runner\Runner.rc" />
+    <ClCompile Include="D:\New Folder (2)\food_safety_app\windows\runner\flutter_window.cpp" />
+    <ClCompile Include="D:\New Folder (2)\food_safety_app\windows\runner\main.cpp" />
+    <ClCompile Include="D:\New Folder (2)\food_safety_app\windows\runner\utils.cpp" />
+    <ClCompile Include="D:\New Folder (2)\food_safety_app\windows\runner\win32_window.cpp" />
+    <ClCompile Include="D:\New Folder (2)\food_safety_app\windows\flutter\generated_plugin_registrant.cc" />
+    <ResourceCompile Include="D:\New Folder (2)\food_safety_app\windows\runner\Runner.rc" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="C:\Users\tejan\food_safety_app\build\windows\x64\ZERO_CHECK.vcxproj">
-      <Project>{2D8D6859-6E43-356C-9A09-FCAE21DCD2FC}</Project>
+    <ProjectReference Include="D:\New Folder (2)\food_safety_app\build\windows\x64\ZERO_CHECK.vcxproj">
+      <Project>{52798432-AA47-3E8A-A1BB-E9845CEB3C28}</Project>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\tejan\food_safety_app\build\windows\x64\plugins\file_selector_windows\file_selector_windows_plugin.vcxproj">
-      <Project>{3684CA5B-87EA-3181-94D1-1203C7A1EC38}</Project>
+    <ProjectReference Include="D:\New Folder (2)\food_safety_app\build\windows\x64\plugins\file_selector_windows\file_selector_windows_plugin.vcxproj">
+      <Project>{6F517CE4-D5D7-3C5D-B308-DA8F95EDDCAA}</Project>
       <Name>file_selector_windows_plugin</Name>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\tejan\food_safety_app\build\windows\x64\flutter\flutter_assemble.vcxproj">
-      <Project>{682ED72D-2429-3827-9EE3-4270C9A79267}</Project>
+    <ProjectReference Include="D:\New Folder (2)\food_safety_app\build\windows\x64\flutter\flutter_assemble.vcxproj">
+      <Project>{AE6848FB-ADDB-3C35-866B-E0EF667DAF92}</Project>
       <Name>flutter_assemble</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\tejan\food_safety_app\build\windows\x64\flutter\flutter_wrapper_app.vcxproj">
-      <Project>{7359F479-9D8C-350E-A7E2-0E6245A45E60}</Project>
+    <ProjectReference Include="D:\New Folder (2)\food_safety_app\build\windows\x64\flutter\flutter_wrapper_app.vcxproj">
+      <Project>{AC6CF1E0-771A-335E-8AE2-F83EF6184F09}</Project>
       <Name>flutter_wrapper_app</Name>
     </ProjectReference>
   </ItemGroup>

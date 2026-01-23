@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 class AppConstants {
   static const String appName = 'Food Safety Monitor';
   static const String apiBaseUrl = 'http://localhost:8000';

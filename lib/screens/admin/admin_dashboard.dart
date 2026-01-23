@@ -17,6 +17,11 @@ class AdminDashboard extends StatefulWidget {
 class _AdminDashboardState extends State<AdminDashboard> {
   int _selectedIndex = 0;
 
+  void _logout(BuildContext context) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await authProvider.logout();
+  }
+
   // Define the screens
   final List<Widget> _screens = [
     const DashboardHome(),
@@ -38,7 +43,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     final BuildContext? context = this.context;
     if (context != null) {
       await Provider.of<AuthProvider>(context, listen: false).fetchAllUsers();
-      await Provider.of<RestaurantProvider>(context, listen: false).fetchRestaurants();
+      // await Provider.of<RestaurantProvider>(context, listen: false).fetchRestaurants(); // Already loaded
       await Provider.of<ReportProvider>(context, listen: false).fetchAllReports();
     }
   }
@@ -62,13 +67,52 @@ class _AdminDashboardState extends State<AdminDashboard> {
             onPressed: _loadInitialData,
             tooltip: 'Refresh Data',
           ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              Provider.of<AuthProvider>(context, listen: false).logout();
-              Navigator.pushReplacementNamed(context, '/login');
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              switch (value) {
+                case 'profile':
+                  // Navigate to profile
+                  break;
+                case 'settings':
+                  // Navigate to settings
+                  break;
+                case 'logout':
+                  _logout(context);
+                  break;
+              }
             },
-            tooltip: 'Logout',
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'profile',
+                child: Row(
+                  children: [
+                    Icon(Icons.person, size: 20),
+                    SizedBox(width: 8),
+                    Text('Profile'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'settings',
+                child: Row(
+                  children: [
+                    Icon(Icons.settings, size: 20),
+                    SizedBox(width: 8),
+                    Text('Settings'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, size: 20),
+                    SizedBox(width: 8),
+                    Text('Logout'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),

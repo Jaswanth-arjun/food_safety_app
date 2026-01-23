@@ -1,1 +1,0 @@
- C:\\Users\\tejan\\food_safety_app\\.dart_tool\\flutter_build\\0365951119ad73c601c49f7d4b1e9879\\native_assets.json: 

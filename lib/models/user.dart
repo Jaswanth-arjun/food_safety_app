@@ -150,7 +150,7 @@ class User {
                 json['full_name']?.toString() ?? 
                 json['name']?.toString() ?? 
                 'Unknown User',
-      role: json['role']?.toString()?.toLowerCase() ?? 'citizen',
+      role: json['role']?.toString().toLowerCase() ?? 'citizen',
       phoneNumber: json['phoneNumber']?.toString() ?? 
                    json['phone_number']?.toString(),
       profileImageUrl: json['profileImageUrl']?.toString() ?? 
