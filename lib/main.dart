@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'providers/auth_provider.dart';
-import 'providers/restaurant_provider.dart';
-import 'providers/report_provider.dart';
-import 'providers/inspection_provider.dart';
-import 'screens/auth/login_screen.dart';
-import 'screens/citizen/home_screen.dart';
-import 'screens/inspector/dashboard.dart'; // Add this import
+import 'package:food_safety_app/providers/auth_provider.dart';
+import 'package:food_safety_app/providers/restaurant_provider.dart';
+import 'package:food_safety_app/providers/report_provider.dart';
+import 'package:food_safety_app/providers/inspection_provider.dart';
+import 'package:food_safety_app/screens/auth/login_screen.dart';
+import 'package:food_safety_app/screens/citizen/home_screen.dart';
+import 'package:food_safety_app/screens/inspector/dashboard.dart';
+import 'package:food_safety_app/screens/admin/admin_dashboard.dart'; // Add this import
 
 void main() {
   runApp(
@@ -31,14 +32,23 @@ class MyApp extends StatelessWidget {
       title: 'Food Safety Monitor',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.deepPurple, // Changed to match admin theme
         useMaterial3: true,
         appBarTheme: const AppBarTheme(
-          elevation: 0,
+          elevation: 4,
           centerTitle: true,
+          backgroundColor: Colors.deepPurple,
+          foregroundColor: Colors.white,
         ),
+        scaffoldBackgroundColor: Colors.grey[50],
       ),
       home: const AppWrapper(),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/citizen': (context) => const CitizenHomeScreen(),
+        '/inspector': (context) => const InspectorDashboard(),
+        '/admin': (context) => const AdminDashboard(),
+      },
     );
   }
 }
@@ -51,9 +61,55 @@ class AppWrapper extends StatelessWidget {
     final authProvider = Provider.of<AuthProvider>(context);
     
     if (authProvider.isLoading) {
-      return const Scaffold(
+      return Scaffold(
+        backgroundColor: Colors.deepPurple,
         body: Center(
-          child: CircularProgressIndicator(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 20,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.restaurant_menu,
+                  size: 60,
+                  color: Colors.deepPurple,
+                ),
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                'Food Safety Monitor',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Loading...',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 40),
+              const CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -65,9 +121,9 @@ class AppWrapper extends StatelessWidget {
     // Route based on role
     switch (authProvider.userRole) {
       case 'inspector':
-        return const InspectorDashboard(); // Use the actual InspectorDashboard
+        return const InspectorDashboard();
       case 'admin':
-        return AdminDashboard(); // We'll create this later
+        return const AdminDashboard(); // Now using the real AdminDashboard
       case 'citizen':
       default:
         return const CitizenHomeScreen();
@@ -75,15 +131,5 @@ class AppWrapper extends StatelessWidget {
   }
 }
 
-// Keep the AdminDashboard placeholder for now
-class AdminDashboard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Admin Dashboard')),
-      body: const Center(
-        child: Text('Admin Dashboard - Coming Soon!'),
-      ),
-    );
-  }
-}
+// IMPORTANT: REMOVE THE PLACEHOLDER AdminDashboard CLASS FROM HERE!
+// Delete everything below this line if it exists

@@ -1,81 +1,8 @@
 import 'package:flutter/material.dart';
-
-class Restaurant {
-  final String id;
-  final String name;
-  final String address;
-  final String city;
-  final String? phoneNumber;
-  final double rating;
-  final String status;
-  final int inspectionCount;
-
-  Restaurant({
-    required this.id,
-    required this.name,
-    required this.address,
-    required this.city,
-    this.phoneNumber,
-    required this.rating,
-    required this.status,
-    required this.inspectionCount,
-  });
-}
+import '../models/restaurant.dart';
 
 class RestaurantProvider with ChangeNotifier {
-  List<Restaurant> _restaurants = [
-    Restaurant(
-      id: '1',
-      name: 'Food Haven Restaurant',
-      address: '123 Main Street, Colaba',
-      city: 'Mumbai',
-      phoneNumber: '+91 9876543210',
-      rating: 4.5,
-      status: 'Excellent',
-      inspectionCount: 12,
-    ),
-    Restaurant(
-      id: '2',
-      name: 'Spice Palace',
-      address: '456 Park Avenue, Connaught Place',
-      city: 'Delhi',
-      phoneNumber: '+91 9876543211',
-      rating: 4.2,
-      status: 'Good',
-      inspectionCount: 8,
-    ),
-    Restaurant(
-      id: '3',
-      name: 'Ocean View Cafe',
-      address: '789 Beach Road, Calangute',
-      city: 'Goa',
-      phoneNumber: '+91 9876543212',
-      rating: 3.8,
-      status: 'Average',
-      inspectionCount: 15,
-    ),
-    Restaurant(
-      id: '4',
-      name: 'Quick Bites Fast Food',
-      address: '321 Market Street, MG Road',
-      city: 'Bangalore',
-      phoneNumber: '+91 9876543213',
-      rating: 2.5,
-      status: 'Poor',
-      inspectionCount: 20,
-    ),
-    Restaurant(
-      id: '5',
-      name: 'Green Leaf Vegetarian',
-      address: '654 Garden Lane, Jubilee Hills',
-      city: 'Hyderabad',
-      phoneNumber: '+91 9876543214',
-      rating: 1.8,
-      status: 'Critical',
-      inspectionCount: 25,
-    ),
-  ];
-
+  List<Restaurant> _restaurants = [];
   bool _isLoading = false;
   String? _error;
 
@@ -83,40 +10,149 @@ class RestaurantProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  Color getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'excellent':
-        return Colors.green;
-      case 'good':
-        return Colors.blue;
-      case 'average':
-        return Colors.orange;
-      case 'poor':
-        return Colors.orange.shade700;
-      case 'critical':
-        return Colors.red;
-      default:
-        return Colors.grey;
+  // Initialize with mock data
+  RestaurantProvider() {
+    _initializeMockData();
+  }
+
+  void _initializeMockData() {
+    _restaurants = [
+      Restaurant(
+        id: '1',
+        name: 'Food Palace',
+        address: '123 Main Street, Mumbai',
+        phone: '+91 9876543210',
+        licenseNumber: 'FSSAI123456',
+        lastInspectionScore: 85,
+        lastInspectionDate: DateTime.now().subtract(const Duration(days: 15)),
+        createdAt: DateTime.now().subtract(const Duration(days: 365)),
+      ),
+      Restaurant(
+        id: '2',
+        name: 'Spice Garden',
+        address: '456 Park Avenue, Delhi',
+        phone: '+91 9876543211',
+        licenseNumber: 'FSSAI123457',
+        lastInspectionScore: 92,
+        lastInspectionDate: DateTime.now().subtract(const Duration(days: 30)),
+        createdAt: DateTime.now().subtract(const Duration(days: 300)),
+      ),
+      Restaurant(
+        id: '3',
+        name: 'Burger Hub',
+        address: '789 Beach Road, Goa',
+        phone: '+91 9876543212',
+        licenseNumber: 'FSSAI123458',
+        lastInspectionScore: 45,
+        lastInspectionDate: DateTime.now().subtract(const Duration(days: 60)),
+        createdAt: DateTime.now().subtract(const Duration(days: 250)),
+      ),
+      Restaurant(
+        id: '4',
+        name: 'Pizza Corner',
+        address: '321 Market Street, Bangalore',
+        phone: '+91 9876543213',
+        licenseNumber: 'FSSAI123459',
+        lastInspectionScore: 78,
+        lastInspectionDate: DateTime.now().subtract(const Duration(days: 10)),
+        createdAt: DateTime.now().subtract(const Duration(days: 200)),
+      ),
+      Restaurant(
+        id: '5',
+        name: 'Noodle Bar',
+        address: '654 Garden Lane, Hyderabad',
+        phone: '+91 9876543214',
+        licenseNumber: 'FSSAI123460',
+        lastInspectionScore: 65,
+        lastInspectionDate: DateTime.now().subtract(const Duration(days: 45)),
+        createdAt: DateTime.now().subtract(const Duration(days: 150)),
+      ),
+    ];
+  }
+
+  // Fetch restaurants (simulated API call)
+  Future<void> fetchRestaurants() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      await Future.delayed(const Duration(seconds: 1));
+      // Already initialized with mock data
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      _error = 'Failed to fetch restaurants: $e';
+      notifyListeners();
     }
   }
 
-  List<Restaurant> getTopRatedRestaurants({int limit = 3}) {
-    final sorted = List<Restaurant>.from(_restaurants);
-    sorted.sort((a, b) => b.rating.compareTo(a.rating));
-    return sorted.take(limit).toList();
+  // Add restaurant
+  Future<void> addRestaurant(Restaurant restaurant) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 500));
+      _restaurants.add(restaurant);
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      _error = 'Failed to add restaurant: $e';
+      notifyListeners();
+    }
   }
 
-  List<Restaurant> getPoorRatedRestaurants({int limit = 3}) {
-    final sorted = List<Restaurant>.from(_restaurants);
-    sorted.sort((a, b) => a.rating.compareTo(b.rating));
-    return sorted.take(limit).toList();
+  // Update restaurant
+  Future<void> updateRestaurant(Restaurant restaurant) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 500));
+      final index = _restaurants.indexWhere((r) => r.id == restaurant.id);
+      if (index != -1) {
+        _restaurants[index] = restaurant;
+      }
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      _error = 'Failed to update restaurant: $e';
+      notifyListeners();
+    }
   }
 
+  // Delete restaurant
+  Future<void> deleteRestaurant(String restaurantId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 500));
+      _restaurants.removeWhere((r) => r.id == restaurantId);
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      _error = 'Failed to delete restaurant: $e';
+      notifyListeners();
+    }
+  }
+
+  // Get restaurant by ID
   Restaurant? getRestaurantById(String id) {
     try {
       return _restaurants.firstWhere((r) => r.id == id);
     } catch (e) {
       return null;
     }
+  }
+
+  // Clear error
+  void clearError() {
+    _error = null;
+    notifyListeners();
   }
 }

@@ -2,57 +2,64 @@ class Restaurant {
   final String id;
   final String name;
   final String address;
-  final String city;
-  final String? state;
-  final String? postalCode;
-  final String country;
-  final String? phoneNumber;
-  final String? email;
-  final String? ownerName;
-  final String? licenseNumber;
-  final double? latitude;
-  final double? longitude;
-  final bool isActive;
+  final String phone;
+  final String licenseNumber;
+  final int? lastInspectionScore;
+  final DateTime? lastInspectionDate;
   final DateTime createdAt;
-  final DateTime updatedAt;
 
   Restaurant({
     required this.id,
     required this.name,
     required this.address,
-    required this.city,
-    this.state,
-    this.postalCode,
-    this.country = 'India',
-    this.phoneNumber,
-    this.email,
-    this.ownerName,
-    this.licenseNumber,
-    this.latitude,
-    this.longitude,
-    required this.isActive,
+    this.phone = '',
+    this.licenseNumber = '',
+    this.lastInspectionScore,
+    this.lastInspectionDate,
     required this.createdAt,
-    required this.updatedAt,
   });
 
-  factory Restaurant.fromJson(Map<String, dynamic> json) {
+  // Formatted date for display
+  String get formattedLastInspectionDate {
+    if (lastInspectionDate == null) return 'Never';
+    final now = DateTime.now();
+    final difference = now.difference(lastInspectionDate!);
+    
+    if (difference.inDays > 365) {
+      return '${(difference.inDays / 365).floor()} years ago';
+    } else if (difference.inDays > 30) {
+      return '${(difference.inDays / 30).floor()} months ago';
+    } else if (difference.inDays > 7) {
+      return '${(difference.inDays / 7).floor()} weeks ago';
+    } else if (difference.inDays > 0) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} hours ago';
+    } else {
+      return 'Today';
+    }
+  }
+
+  // Copy with method
+  Restaurant copyWith({
+    String? id,
+    String? name,
+    String? address,
+    String? phone,
+    String? licenseNumber,
+    int? lastInspectionScore,
+    DateTime? lastInspectionDate,
+    DateTime? createdAt,
+  }) {
     return Restaurant(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      address: json['address'] ?? '',
-      city: json['city'] ?? '',
-      state: json['state'],
-      postalCode: json['postal_code'],
-      country: json['country'] ?? 'India',
-      phoneNumber: json['phone_number'],
-      email: json['email'],
-      ownerName: json['owner_name'],
-      licenseNumber: json['license_number'],
-      latitude: json['latitude'] != null ? double.parse(json['latitude'].toString()) : null,
-      longitude: json['longitude'] != null ? double.parse(json['longitude'].toString()) : null,
-      isActive: json['is_active'] ?? true,
-      createdAt: DateTime.parse(json['created_at'] ?? DateTime.now().toIso8601String()),
-      updatedAt: DateTime.parse(json['updated_at'] ?? DateTime.now().toIso8601String()),
+      id: id ?? this.id,
+      name: name ?? this.name,
+      address: address ?? this.address,
+      phone: phone ?? this.phone,
+      licenseNumber: licenseNumber ?? this.licenseNumber,
+      lastInspectionScore: lastInspectionScore ?? this.lastInspectionScore,
+      lastInspectionDate: lastInspectionDate ?? this.lastInspectionDate,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 }

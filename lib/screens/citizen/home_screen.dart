@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
 import '../../providers/restaurant_provider.dart';
+import '../../models/restaurant.dart';
 import 'report_screen.dart';
 
 class CitizenHomeScreen extends StatefulWidget {
@@ -12,556 +12,502 @@ class CitizenHomeScreen extends StatefulWidget {
 }
 
 class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
-  int _selectedIndex = 0;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRestaurants();
+  }
+
+  Future<void> _loadRestaurants() async {
+    await Provider.of<RestaurantProvider>(context, listen: false).fetchRestaurants();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    final restaurantProvider = Provider.of<RestaurantProvider>(context);
-    
-    final topRestaurants = restaurantProvider.getTopRatedRestaurants();
-    final poorRestaurants = restaurantProvider.getPoorRatedRestaurants();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Food Safety Monitor'),
+        backgroundColor: Colors.deepPurple,
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications),
-            onPressed: () {},
+            onPressed: () {
+              // Navigate to notifications
+            },
           ),
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.person),
             onPressed: () {
-              authProvider.logout();
+              // Navigate to profile
             },
           ),
         ],
       ),
-      body: _selectedIndex == 0 
-          ? _buildHomeContent(context, restaurantProvider, topRestaurants, poorRestaurants)
-          : _buildOtherScreens(),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+      body: Column(
+        children: [
+          // Search Bar
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search restaurants...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                filled: true,
+                fillColor: Colors.grey[50],
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.restaurant),
-            label: 'Restaurants',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+          
+          // Restaurants List
+          Expanded(
+            child: Consumer<RestaurantProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                
+                if (provider.restaurants.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'No restaurants found',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  );
+                }
+                
+                List<Restaurant> filteredRestaurants = provider.restaurants
+                    .where((restaurant) =>
+                        restaurant.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+                        restaurant.address.toLowerCase().contains(_searchQuery.toLowerCase()))
+                    .toList();
+                
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: filteredRestaurants.length,
+                  itemBuilder: (context, index) {
+                    final restaurant = filteredRestaurants[index];
+                    return RestaurantCard(restaurant: restaurant);
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ReportScreen(),
-            ),
-          );
-        },
-        backgroundColor: Colors.blue,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
+}
 
-  Widget _buildHomeContent(BuildContext context, RestaurantProvider restaurantProvider, 
-      List topRestaurants, List poorRestaurants) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Welcome Card
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Welcome!',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Help improve food safety by reporting hygiene issues and viewing restaurant ratings.',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ReportScreen(),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.report, size: 20),
-                          label: const Text('Report Issue'),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () {
-                            setState(() {
-                              _selectedIndex = 1;
-                            });
-                          },
-                          icon: const Icon(Icons.search, size: 20),
-                          label: const Text('Find Restaurants'),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
+class RestaurantCard extends StatelessWidget {
+  final Restaurant restaurant;
 
-          const SizedBox(height: 24),
+  const RestaurantCard({super.key, required this.restaurant});
 
-          // Top Rated Restaurants
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Top Rated Restaurants',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedIndex = 1;
-                  });
-                },
-                child: const Text('View All'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...topRestaurants.map((restaurant) => _buildRestaurantCard(context, restaurantProvider, restaurant, true)).toList(),
+  @override
+  Widget build(BuildContext context) {
+    final score = restaurant.lastInspectionScore ?? 0;
+    final scoreColor = _getScoreColor(score);
 
-          const SizedBox(height: 24),
-
-          // Needs Improvement
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Needs Improvement',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedIndex = 1;
-                  });
-                },
-                child: const Text('View All'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...poorRestaurants.map((restaurant) => _buildRestaurantCard(context, restaurantProvider, restaurant, false)).toList(),
-
-          const SizedBox(height: 24),
-
-          // Quick Stats
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Quick Stats',
-                    style: TextStyle(
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Restaurant Name and Score
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    restaurant.name,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildStatItem('Total Reports', '12', Icons.report),
-                      _buildStatItem('Resolved', '8', Icons.check_circle),
-                      _buildStatItem('Restaurants', '25', Icons.restaurant),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRestaurantCard(BuildContext context, RestaurantProvider provider, restaurant, bool isTopRated) {
-    final statusColor = provider.getStatusColor(restaurant.status);
-    
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text(restaurant.name),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Address: ${restaurant.address}'),
-                  const SizedBox(height: 8),
-                  Text('City: ${restaurant.city}'),
-                  const SizedBox(height: 8),
-                  Text('Phone: ${restaurant.phoneNumber ?? 'N/A'}'),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.star, color: Colors.amber, size: 20),
-                      const SizedBox(width: 4),
-                      Text('Rating: ${restaurant.rating}'),
-                      const SizedBox(width: 16),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: statusColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: statusColor),
-                        ),
-                        child: Text(
-                          restaurant.status.toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: statusColor,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Close'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ReportScreen(restaurantId: restaurant.id),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: scoreColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: scoreColor),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _getScoreIcon(score),
+                        color: scoreColor,
+                        size: 16,
                       ),
-                    );
-                  },
-                  child: const Text('Report Issue'),
+                      const SizedBox(width: 4),
+                      Text(
+                        score > 0 ? '$score' : 'N/A',
+                        style: TextStyle(
+                          color: scoreColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          );
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: isTopRated ? Colors.green.shade50 : Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(10),
+            
+            const SizedBox(height: 8),
+            
+            // Address
+            Row(
+              children: [
+                const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    restaurant.address,
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                child: Icon(
-                  isTopRated ? Icons.star : Icons.warning,
-                  color: isTopRated ? Colors.green : Colors.orange,
-                  size: 30,
+              ],
+            ),
+            
+            const SizedBox(height: 8),
+            
+            // Phone (if available)
+            if (restaurant.phone.isNotEmpty)
+              Row(
+                children: [
+                  const Icon(Icons.phone, size: 16, color: Colors.grey),
+                  const SizedBox(width: 4),
+                  Text(
+                    restaurant.phone,
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            
+            const SizedBox(height: 12),
+            
+            // Last Inspection Date
+            if (restaurant.lastInspectionDate != null)
+              Text(
+                'Last inspected: ${restaurant.formattedLastInspectionDate}',
+                style: const TextStyle(
+                  color: Colors.blue,
+                  fontSize: 12,
                 ),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      restaurant.name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+            
+            const SizedBox(height: 12),
+            
+            // Action Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReportScreen(
+                            restaurantId: restaurant.id,
+                            restaurantName: restaurant.name,
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.report, size: 16),
+                    label: const Text('Report Issue'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.deepPurple,
+                      side: const BorderSide(color: Colors.deepPurple),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      restaurant.address,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.star, color: Colors.amber, size: 16),
-                        const SizedBox(width: 4),
-                        Text(
-                          restaurant.rating.toString(),
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: statusColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: statusColor),
-                          ),
-                          child: Text(
-                            restaurant.status.toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: statusColor,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.chevron_right, color: Colors.grey),
-                onPressed: () {},
-              ),
-            ],
-          ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      _showRestaurantDetails(context, restaurant);
+                    },
+                    icon: const Icon(Icons.info, size: 16),
+                    label: const Text('Details'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildStatItem(String label, String value, IconData icon) {
-    return Column(
-      children: [
-        Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.blue.shade50,
-            borderRadius: BorderRadius.circular(25),
-          ),
-          child: Icon(icon, color: Colors.blue, size: 24),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildOtherScreens() {
-    if (_selectedIndex == 1) {
-      return _buildRestaurantList();
-    } else {
-      return _buildProfileScreen();
-    }
-  }
-
-  Widget _buildRestaurantList() {
-    final restaurantProvider = Provider.of<RestaurantProvider>(context);
-    final restaurants = restaurantProvider.restaurants;
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemCount: restaurants.length,
-      itemBuilder: (context, index) {
-        final restaurant = restaurants[index];
-        final statusColor = restaurantProvider.getStatusColor(restaurant.status);
-        
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: ListTile(
-            leading: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Icon(
-                Icons.restaurant,
-                color: statusColor,
-              ),
-            ),
-            title: Text(
-              restaurant.name,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text(restaurant.address),
-            trailing: Chip(
-              label: Text(
-                restaurant.status,
-                style: TextStyle(color: Colors.white),
-              ),
-              backgroundColor: statusColor,
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ReportScreen(restaurantId: restaurant.id),
-                ),
-              );
-            },
-          ),
-        );
+  void _showRestaurantDetails(BuildContext context, Restaurant restaurant) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return RestaurantDetailsSheet(restaurant: restaurant);
       },
     );
   }
 
-  Widget _buildProfileScreen() {
-    final authProvider = Provider.of<AuthProvider>(context);
-    final user = authProvider.user;
+  Color _getScoreColor(int score) {
+    if (score >= 90) return Colors.green;
+    if (score >= 70) return Colors.lightGreen;
+    if (score >= 50) return Colors.orange;
+    return Colors.red;
+  }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
+  IconData _getScoreIcon(int score) {
+    if (score >= 90) return Icons.verified;
+    if (score >= 70) return Icons.check_circle;
+    if (score >= 50) return Icons.warning;
+    return Icons.error;
+  }
+}
+
+class RestaurantDetailsSheet extends StatelessWidget {
+  final Restaurant restaurant;
+
+  const RestaurantDetailsSheet({super.key, required this.restaurant});
+
+  @override
+  Widget build(BuildContext context) {
+    final score = restaurant.lastInspectionScore ?? 0;
+    final scoreColor = _getScoreColor(score);
+
+    return Container(
+      padding: const EdgeInsets.all(20),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  const CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.blue,
-                    child: Icon(
-                      Icons.person,
-                      size: 50,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    user?['fullName'] ?? 'User',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    user?['email'] ?? 'email@example.com',
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 10),
-                  Chip(
-                    label: Text(
-                      user?['role'].toUpperCase() ?? 'CITIZEN',
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    backgroundColor: Colors.blue,
-                  ),
-                ],
+          Center(
+            child: Container(
+              width: 60,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300]!,
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
           const SizedBox(height: 20),
-          Card(
-            child: Column(
+          
+          // Restaurant Name
+          Text(
+            restaurant.name,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Hygiene Score
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: scoreColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: scoreColor),
+            ),
+            child: Row(
               children: [
-                ListTile(
-                  leading: const Icon(Icons.history, color: Colors.blue),
-                  title: const Text('Report History'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
+                Icon(
+                  _getScoreIcon(score),
+                  color: scoreColor,
+                  size: 32,
                 ),
-                const Divider(height: 0),
-                ListTile(
-                  leading: const Icon(Icons.settings, color: Colors.blue),
-                  title: const Text('Settings'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Hygiene Score',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                        ),
+                      ),
+                      Text(
+                        score > 0 ? '$score/100' : 'Not Rated',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: scoreColor,
+                        ),
+                      ),
+                      Text(
+                        _getScoreLabel(score),
+                        style: TextStyle(
+                          color: scoreColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const Divider(height: 0),
-                ListTile(
-                  leading: const Icon(Icons.help, color: Colors.blue),
-                  title: const Text('Help & Support'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 20),
+          
+          // Details Grid
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 3,
+            children: [
+              _buildDetailItem(Icons.location_on, 'Address', restaurant.address),
+              if (restaurant.phone.isNotEmpty)
+                _buildDetailItem(Icons.phone, 'Phone', restaurant.phone),
+              if (restaurant.licenseNumber.isNotEmpty)
+                _buildDetailItem(Icons.badge, 'License', restaurant.licenseNumber),
+              if (restaurant.lastInspectionDate != null)
+                _buildDetailItem(Icons.calendar_today, 'Last Inspection', 
+                  restaurant.formattedLastInspectionDate),
+            ],
+          ),
+          
+          const SizedBox(height: 24),
+          
+          // Report Button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReportScreen(
+                      restaurantId: restaurant.id,
+                      restaurantName: restaurant.name,
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const Divider(height: 0),
-                ListTile(
-                  leading: const Icon(Icons.logout, color: Colors.red),
-                  title: const Text('Logout'),
-                  onTap: () {
-                    authProvider.logout();
-                  },
+              ),
+              child: const Text(
+                'Report an Issue',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Close Button
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: () => Navigator.pop(context),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.deepPurple,
+                side: const BorderSide(color: Colors.deepPurple),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('Close'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailItem(IconData icon, String label, String value) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[50]!,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.deepPurple, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -569,5 +515,26 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
         ],
       ),
     );
+  }
+
+  Color _getScoreColor(int score) {
+    if (score >= 90) return Colors.green;
+    if (score >= 70) return Colors.lightGreen;
+    if (score >= 50) return Colors.orange;
+    return Colors.red;
+  }
+
+  String _getScoreLabel(int score) {
+    if (score >= 90) return 'Excellent';
+    if (score >= 70) return 'Good';
+    if (score >= 50) return 'Fair';
+    return 'Poor';
+  }
+
+  IconData _getScoreIcon(int score) {
+    if (score >= 90) return Icons.verified;
+    if (score >= 70) return Icons.check_circle;
+    if (score >= 50) return Icons.warning;
+    return Icons.error;
   }
 }

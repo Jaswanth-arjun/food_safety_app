@@ -1,0 +1,10 @@
+^C:\USERS\TEJAN\FOOD_SAFETY_APP\BUILD\WINDOWS\X64\CMAKEFILES\B8B82DB9E3221B79348EAF5BE653FA43\INSTALL_FORCE.RULE
+setlocal
+cd .
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
