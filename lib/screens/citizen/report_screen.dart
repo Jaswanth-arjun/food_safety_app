@@ -133,7 +133,7 @@ class _ReportScreenState extends State<ReportScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final reportProvider = Provider.of<ReportProvider>(context);
-    final currentUser = authProvider.user;
+    final currentUser = authProvider.currentUser;
 
     return Scaffold(
       appBar: AppBar(

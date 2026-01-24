@@ -81,7 +81,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Dashboard'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.restaurant_menu, color: Colors.white),
+            const SizedBox(width: 8),
+            const Text('Food Safety Monitor'),
+          ],
+        ),
+        centerTitle: true,
         backgroundColor: Colors.deepPurple,
         elevation: 4,
         actions: [

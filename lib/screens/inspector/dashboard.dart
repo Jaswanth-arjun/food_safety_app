@@ -37,7 +37,15 @@ class _InspectorDashboardState extends State<InspectorDashboard> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Inspector Dashboard'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.restaurant_menu, color: Colors.white),
+            const SizedBox(width: 8),
+            const Text('Food Safety Monitor'),
+          ],
+        ),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications),

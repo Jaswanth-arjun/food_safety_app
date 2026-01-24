@@ -8,13 +8,19 @@ class UserManagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    
+
     return Scaffold(
-      body: ListView.builder(
-        itemCount: authProvider.allUsers.length,
-        itemBuilder: (context, index) {
-          final user = authProvider.allUsers[index];
-          return UserListTile(user: user);
+      body: Consumer<AuthProvider>(
+        builder: (context, provider, child) {
+          final users = provider.allUsers;
+
+          return ListView.builder(
+            itemCount: users.length,
+            itemBuilder: (context, index) {
+              final user = users[index];
+              return UserListTile(user: user);
+            },
+          );
         },
       ),
     );
@@ -30,7 +36,7 @@ class UserListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final roleColor = _getRoleColor(user['role']);
-    final isCurrentUser = authProvider.user?['id'] == user['id'];
+    final isCurrentUser = authProvider.currentUser?['id'] == user['id'];
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

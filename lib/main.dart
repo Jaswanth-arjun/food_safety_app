@@ -12,7 +12,9 @@ import 'package:food_guard/screens/inspector/dashboard.dart';
 import 'package:food_guard/screens/admin/admin_dashboard.dart';
 import 'package:food_guard/app.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   // Initialize providers
   final ratingProvider = RatingProvider();
 

@@ -30,7 +30,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> _loadUsers() async {
     if (_prefs == null) return;
-    
+
     final usersJson = _prefs!.getString('users');
     if (usersJson != null) {
       final List<dynamic> usersList = json.decode(usersJson);
@@ -42,7 +42,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> _saveUsers() async {
     if (_prefs == null) return;
-    
+
     final usersJson = json.encode(_allUsers);
     await _prefs!.setString('users', usersJson);
   }
@@ -215,7 +215,7 @@ class AuthProvider with ChangeNotifier {
     await Future.delayed(const Duration(seconds: 2));
 
     // Validate input
-    if (email.isEmpty || password.isEmpty || fullName.isEmpty || phoneNumber.isEmpty || 
+    if (email.isEmpty || password.isEmpty || fullName.isEmpty || phoneNumber.isEmpty ||
         registrationCode.isEmpty || licenseNumber.isEmpty) {
       _error = 'Please fill in all fields';
       _isLoading = false;
@@ -312,7 +312,7 @@ class AuthProvider with ChangeNotifier {
     await Future.delayed(const Duration(seconds: 2));
 
     // Validate input
-    if (email.isEmpty || password.isEmpty || fullName.isEmpty || phoneNumber.isEmpty || 
+    if (email.isEmpty || password.isEmpty || fullName.isEmpty || phoneNumber.isEmpty ||
         adminCode.isEmpty || organization.isEmpty) {
       _error = 'Please fill in all fields';
       _isLoading = false;
@@ -415,17 +415,17 @@ class AuthProvider with ChangeNotifier {
   Future<void> updateUserRole(String userId, String newRole) async {
     try {
       await Future.delayed(const Duration(milliseconds: 300));
-      
+
       // Update in allUsers list
       final userIndex = _allUsers.indexWhere((user) => user['id'] == userId);
       if (userIndex != -1) {
         _allUsers[userIndex]['role'] = newRole;
-        
+
         // Also update current user if it's the same user
         if (_user?['id'] == userId) {
           _user?['role'] = newRole;
         }
-        
+
         notifyListeners();
       }
     } catch (error) {
@@ -437,14 +437,14 @@ class AuthProvider with ChangeNotifier {
   Future<void> deleteUser(String userId) async {
     try {
       await Future.delayed(const Duration(milliseconds: 300));
-      
+
       // Don't allow admin to delete themselves
       if (_user?['id'] == userId) {
         _error = 'Cannot delete your own account';
         notifyListeners();
         return;
       }
-      
+
       _allUsers.removeWhere((user) => user['id'] == userId);
       notifyListeners();
     } catch (error) {
@@ -456,10 +456,10 @@ class AuthProvider with ChangeNotifier {
   Future<void> updateUserProfile(Map<String, dynamic> updatedData) async {
     try {
       await Future.delayed(const Duration(milliseconds: 300));
-      
+
       if (_user != null) {
         _user = {..._user!, ...updatedData};
-        
+
         // Also update in allUsers list if admin is viewing
         if (_user?['role'] == 'admin' || _allUsers.isNotEmpty) {
           final userIndex = _allUsers.indexWhere((u) => u['id'] == _user?['id']);
@@ -467,7 +467,7 @@ class AuthProvider with ChangeNotifier {
             _allUsers[userIndex] = {..._allUsers[userIndex], ...updatedData};
           }
         }
-        
+
         await _saveUsers();
         notifyListeners();
       }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "847710825087",
+    "project_id": "food-guard-b43ba",
+    "storage_bucket": "food-guard-b43ba.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:847710825087:android:301672f5ea3bebcd922d4a",
+        "android_client_info": {
+          "package_name": "com.example.food_safety_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkAwg0CvltjN5IR18iu3gdL9OrJM_V7Qs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

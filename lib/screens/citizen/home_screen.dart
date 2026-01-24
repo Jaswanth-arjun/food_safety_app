@@ -205,7 +205,15 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text('Food Safety Monitor'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.restaurant_menu, color: const Color(0xFF1E293B)),
+            const SizedBox(width: 8),
+            const Text('Food Safety Monitor'),
+          ],
+        ),
+        centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: const Color(0xFF1E293B),

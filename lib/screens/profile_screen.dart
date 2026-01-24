@@ -26,7 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final user = Provider.of<AuthProvider>(context, listen: false).user;
+    final user = Provider.of<AuthProvider>(context, listen: false).currentUser;
     _nameController = TextEditingController(text: user?['fullName'] ?? '');
     _emailController = TextEditingController(text: user?['email'] ?? '');
     _phoneController = TextEditingController(text: user?['phoneNumber'] ?? '');
@@ -122,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() => _isLoading = true);
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final user = authProvider.user;
+    final user = authProvider.currentUser;
 
     Map<String, dynamic> updatedData = {
       'fullName': _nameController.text.trim(),
@@ -164,7 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final user = authProvider.user;
+    final user = authProvider.currentUser;
     final role = user?['role'] ?? 'citizen';
 
     return Scaffold(
