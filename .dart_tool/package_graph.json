@@ -11,6 +11,7 @@
         "flutter",
         "image_picker",
         "intl",
+        "path",
         "provider",
         "shared_preferences",
         "sign_in_with_apple",
@@ -60,6 +61,11 @@
         "test_api",
         "vector_math"
       ]
+    },
+    {
+      "name": "path",
+      "version": "1.9.1",
+      "dependencies": []
     },
     {
       "name": "webview_flutter",
@@ -172,11 +178,6 @@
         "source_span",
         "string_scanner"
       ]
-    },
-    {
-      "name": "path",
-      "version": "1.9.1",
-      "dependencies": []
     },
     {
       "name": "json_annotation",

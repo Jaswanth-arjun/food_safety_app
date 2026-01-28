@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/auth_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -10,14 +11,53 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  late SharedPreferences _prefs;
   bool _notificationsEnabled = true;
   bool _darkModeEnabled = false;
+  bool _locationEnabled = true;
+  bool _analyticsEnabled = true;
   String _language = 'English';
+  String _theme = 'Light';
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    _prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _notificationsEnabled = _prefs.getBool('notifications_enabled') ?? true;
+      _darkModeEnabled = _prefs.getBool('dark_mode_enabled') ?? false;
+      _locationEnabled = _prefs.getBool('location_enabled') ?? true;
+      _analyticsEnabled = _prefs.getBool('analytics_enabled') ?? true;
+      _language = _prefs.getString('language') ?? 'English';
+      _theme = _prefs.getString('theme') ?? 'Light';
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _saveSetting(String key, dynamic value) async {
+    if (value is bool) {
+      await _prefs.setBool(key, value);
+    } else if (value is String) {
+      await _prefs.setString(key, value);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.currentUser;
+
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Settings')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -32,7 +72,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Account Settings
+            // Account Settings Section
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -58,7 +98,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
                   // Account Info
                   Row(
                     children: [
@@ -66,39 +105,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: user?['role'] == 'admin'
-                                ? [Colors.deepPurple, Colors.purple]
-                                : user?['role'] == 'inspector'
-                                    ? [Colors.orange, Colors.deepOrange]
-                                    : [const Color(0xFF60A5FA), const Color(0xFF2563EB)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                          image: (user?['profileImageUrl'] != null && (user?['profileImageUrl'] as String).isNotEmpty)
+                              ? DecorationImage(
+                                  image: NetworkImage(user?['profileImageUrl']),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                          gradient: (user?['profileImageUrl'] == null || (user?['profileImageUrl'] as String).isEmpty)
+                              ? LinearGradient(
+                                  colors: user?['role'] == 'admin'
+                                      ? [Colors.deepPurple, Colors.purple]
+                                      : user?['role'] == 'inspector'
+                                          ? [Colors.orange, Colors.deepOrange]
+                                          : [const Color(0xFF60A5FA), const Color(0xFF2563EB)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                )
+                              : null,
                           borderRadius: BorderRadius.circular(25),
                         ),
-                        child: Icon(
-                          user?['role'] == 'admin'
-                              ? Icons.admin_panel_settings
-                              : user?['role'] == 'inspector'
-                                  ? Icons.search
-                                  : Icons.person,
-                          color: Colors.white,
-                          size: 24,
-                        ),
+                        child: (user?['profileImageUrl'] == null || (user?['profileImageUrl'] as String).isEmpty)
+                            ? Icon(
+                                user?['role'] == 'admin'
+                                    ? Icons.admin_panel_settings
+                                    : user?['role'] == 'inspector'
+                                        ? Icons.search
+                                        : Icons.person,
+                                color: Colors.white,
+                                size: 24,
+                              )
+                            : null,
                       ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              user?['fullName'] ?? 'User',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF1E293B),
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  user?['fullName'] ?? 'User',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF1E293B),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                if (user?['isVerified'] == true || user?['is_verified'] == true)
+                                  const Icon(Icons.verified, color: Colors.green, size: 18),
+                              ],
                             ),
                             Text(
                               user?['email'] ?? '',
@@ -112,10 +168,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 20),
-
-                  // Account Status
+                  const SizedBox(height: 16),
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -125,15 +178,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: Row(
                       children: [
                         Icon(
-                          user?['isVerified'] == true ? Icons.verified : Icons.pending,
-                          color: user?['isVerified'] == true ? Colors.green : Colors.orange,
+                          (user?['isVerified'] == true || user?['is_verified'] == true) ? Icons.verified : Icons.pending,
+                          color: (user?['isVerified'] == true || user?['is_verified'] == true) ? Colors.green : Colors.orange,
                           size: 20,
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          user?['isVerified'] == true ? 'Verified Account' : 'Pending Verification',
+                          (user?['isVerified'] == true || user?['is_verified'] == true) ? 'Verified Account' : 'Pending Verification',
                           style: TextStyle(
-                            color: user?['isVerified'] == true ? Colors.green : Colors.orange,
+                            color: (user?['isVerified'] == true || user?['is_verified'] == true) ? Colors.green : Colors.orange,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -146,7 +199,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             const SizedBox(height: 24),
 
-            // App Settings
+            // App Preferences Section
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -164,7 +217,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'App Settings',
+                    'App Preferences',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -173,321 +226,358 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Notifications
-                  SwitchListTile(
-                    title: const Text(
-                      'Push Notifications',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF1E293B),
-                      ),
+                  // Language Setting
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
                     ),
-                    subtitle: const Text(
-                      'Receive notifications about reports and updates',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF64748B),
-                      ),
-                    ),
-                    value: _notificationsEnabled,
-                    onChanged: (value) {
-                      setState(() {
-                        _notificationsEnabled = value;
-                      });
-                      // TODO: Implement notification settings
-                    },
-                    activeThumbColor: const Color(0xFF2563EB),
-                  ),
-
-                  const Divider(),
-
-                  // Dark Mode
-                  SwitchListTile(
-                    title: const Text(
-                      'Dark Mode',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF1E293B),
-                      ),
-                    ),
-                    subtitle: const Text(
-                      'Switch to dark theme',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF64748B),
-                      ),
-                    ),
-                    value: _darkModeEnabled,
-                    onChanged: (value) {
-                      setState(() {
-                        _darkModeEnabled = value;
-                      });
-                      // TODO: Implement dark mode
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Dark mode coming soon!'),
-                          backgroundColor: Color(0xFF2563EB),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.language, color: const Color(0xFF64748B)),
+                            const SizedBox(width: 12),
+                            const Text(
+                              'Language',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF1E293B),
+                              ),
+                            ),
+                          ],
                         ),
-                      );
-                    },
-                    activeThumbColor: const Color(0xFF2563EB),
-                  ),
-
-                  const Divider(),
-
-                  // Language
-                  ListTile(
-                    title: const Text(
-                      'Language',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF1E293B),
-                      ),
-                    ),
-                    subtitle: Text(
-                      _language,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF64748B),
-                      ),
-                    ),
-                    trailing: const Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16,
-                      color: Color(0xFF64748B),
-                    ),
-                    onTap: () {
-                      // TODO: Implement language selection
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Language selection coming soon!'),
-                          backgroundColor: Color(0xFF2563EB),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Support & About
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 16,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Support & About',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1E293B),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Help & Support
-                  ListTile(
-                    leading: const Icon(
-                      Icons.help_outline,
-                      color: Color(0xFF64748B),
-                    ),
-                    title: const Text(
-                      'Help & Support',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF1E293B),
-                      ),
-                    ),
-                    trailing: const Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16,
-                      color: Color(0xFF64748B),
-                    ),
-                    onTap: () {
-                      // TODO: Navigate to help screen
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Help & Support coming soon!'),
-                          backgroundColor: Color(0xFF2563EB),
-                        ),
-                      );
-                    },
-                  ),
-
-                  const Divider(),
-
-                  // Privacy Policy
-                  ListTile(
-                    leading: const Icon(
-                      Icons.privacy_tip_outlined,
-                      color: Color(0xFF64748B),
-                    ),
-                    title: const Text(
-                      'Privacy Policy',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF1E293B),
-                      ),
-                    ),
-                    trailing: const Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16,
-                      color: Color(0xFF64748B),
-                    ),
-                    onTap: () {
-                      // TODO: Navigate to privacy policy
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Privacy Policy coming soon!'),
-                          backgroundColor: Color(0xFF2563EB),
-                        ),
-                      );
-                    },
-                  ),
-
-                  const Divider(),
-
-                  // Terms of Service
-                  ListTile(
-                    leading: const Icon(
-                      Icons.description_outlined,
-                      color: Color(0xFF64748B),
-                    ),
-                    title: const Text(
-                      'Terms of Service',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF1E293B),
-                      ),
-                    ),
-                    trailing: const Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16,
-                      color: Color(0xFF64748B),
-                    ),
-                    onTap: () {
-                      // TODO: Navigate to terms of service
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Terms of Service coming soon!'),
-                          backgroundColor: Color(0xFF2563EB),
-                        ),
-                      );
-                    },
-                  ),
-
-                  const Divider(),
-
-                  // App Version
-                  const ListTile(
-                    leading: Icon(
-                      Icons.info_outline,
-                      color: Color(0xFF64748B),
-                    ),
-                    title: Text(
-                      'App Version',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF1E293B),
-                      ),
-                    ),
-                    trailing: Text(
-                      '1.1.0',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF64748B),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Logout Button
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 16,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: ElevatedButton.icon(
-                onPressed: () async {
-                  final confirmed = await showDialog<bool>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Logout'),
-                      content: const Text('Are you sure you want to logout?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(true),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.red,
-                          ),
-                          child: const Text('Logout'),
+                        DropdownButton<String>(
+                          value: _language,
+                          underline: const SizedBox(),
+                          items: ['English', 'Hindi', 'Spanish'].map((lang) {
+                            return DropdownMenuItem(value: lang, child: Text(lang));
+                          }).toList(),
+                          onChanged: (newLang) {
+                            if (newLang != null) {
+                              setState(() => _language = newLang);
+                              _saveSetting('language', newLang);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Language changed to $newLang')),
+                              );
+                            }
+                          },
                         ),
                       ],
                     ),
-                  );
+                  ),
 
-                  if (confirmed == true) {
-                    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-                    await authProvider.logout();
-                    if (context.mounted) {
-                      Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-                    }
-                  }
-                },
-                icon: const Icon(Icons.logout, color: Colors.white),
-                label: const Text(
-                  'Logout',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                  const SizedBox(height: 12),
+
+                  // Theme Setting
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(_theme == 'Dark' ? Icons.dark_mode : Icons.light_mode, color: const Color(0xFF64748B)),
+                            const SizedBox(width: 12),
+                            const Text(
+                              'Theme',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF1E293B),
+                              ),
+                            ),
+                          ],
+                        ),
+                        DropdownButton<String>(
+                          value: _theme,
+                          underline: const SizedBox(),
+                          items: ['Light', 'Dark'].map((theme) {
+                            return DropdownMenuItem(value: theme, child: Text(theme));
+                          }).toList(),
+                          onChanged: (newTheme) {
+                            if (newTheme != null) {
+                              setState(() => _theme = newTheme);
+                              _saveSetting('theme', newTheme);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Theme changed to $newTheme')),
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Notifications Section
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
                   ),
-                ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Notifications & Privacy',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1E293B),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Notifications Toggle
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.notifications, color: const Color(0xFF64748B)),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Push Notifications',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF1E293B),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Switch(
+                        value: _notificationsEnabled,
+                        activeColor: Colors.green,
+                        onChanged: (newValue) {
+                          setState(() => _notificationsEnabled = newValue);
+                          _saveSetting('notifications_enabled', newValue);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(_notificationsEnabled ? 'Notifications enabled' : 'Notifications disabled'),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Location Toggle
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, color: const Color(0xFF64748B)),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Location Services',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF1E293B),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Switch(
+                        value: _locationEnabled,
+                        activeColor: Colors.green,
+                        onChanged: (newValue) {
+                          setState(() => _locationEnabled = newValue);
+                          _saveSetting('location_enabled', newValue);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(_locationEnabled ? 'Location enabled' : 'Location disabled'),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Analytics Toggle
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.analytics, color: const Color(0xFF64748B)),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Usage Analytics',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF1E293B),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Switch(
+                        value: _analyticsEnabled,
+                        activeColor: Colors.green,
+                        onChanged: (newValue) {
+                          setState(() => _analyticsEnabled = newValue);
+                          _saveSetting('analytics_enabled', newValue);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(_analyticsEnabled ? 'Analytics enabled' : 'Analytics disabled'),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Account Actions Section
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Account Actions',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1E293B),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Change Password Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Change password feature coming soon')),
+                        );
+                      },
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        side: const BorderSide(color: Color(0xFF2563EB)),
+                      ),
+                      child: const Text(
+                        'Change Password',
+                        style: TextStyle(
+                          color: Color(0xFF2563EB),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Logout Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Logout'),
+                            content: const Text('Are you sure you want to logout?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  authProvider.logout();
+                                },
+                                child: const Text('Logout', style: TextStyle(color: Colors.red)),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      child: const Text(
+                        'Logout',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Footer
+            Center(
+              child: Column(
+                children: [
+                  Text(
+                    'Food Safety Monitor v1.0.0',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '© 2026 Food Safety Authority',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
 

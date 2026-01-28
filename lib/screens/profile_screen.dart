@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';import 'package:image_picker/image_picker.dart';
-import 'dart:io';import '../../providers/auth_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import '../../providers/auth_provider.dart';
+import '../../services/supabase_service.dart';
+import 'package:path/path.dart' as path;
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -129,6 +133,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
       'phoneNumber': _phoneController.text.trim(),
     };
 
+    // Handle image upload
+    if (_profileImage != null) {
+      try {
+        final fileName = 'profile_${user?['id']}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final filePath = 'profile_images/$fileName';
+
+        // Upload image to Supabase storage
+        await SupabaseService.client.storage.from('avatars').upload(
+          filePath,
+          _profileImage!,
+        );
+
+        // Get public URL
+        final imageUrl = SupabaseService.client.storage
+            .from('avatars')
+            .getPublicUrl(filePath);
+
+        updatedData['profileImageUrl'] = imageUrl;
+      } catch (e) {
+        print('Error uploading image: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error uploading image: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() => _isLoading = false);
+        return;
+      }
+    }
+
     // Add role-specific fields
     if (user?['role'] == 'inspector') {
       updatedData.addAll({
@@ -224,8 +259,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     image: FileImage(_profileImage!),
                                     fit: BoxFit.cover,
                                   )
-                                : null,
-                            gradient: _profileImage == null
+                                : (user?['profileImageUrl'] != null && (user?['profileImageUrl'] as String).isNotEmpty)
+                                    ? DecorationImage(
+                                        image: NetworkImage(user?['profileImageUrl']),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
+                            gradient: (_profileImage == null && (user?['profileImageUrl'] == null || (user?['profileImageUrl'] as String).isEmpty))
                                 ? LinearGradient(
                                     colors: role == 'admin'
                                         ? [Colors.deepPurple, Colors.purple]
@@ -249,7 +289,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ],
                           ),
-                          child: _profileImage == null
+                          child: (_profileImage == null && (user?['profileImageUrl'] == null || (user?['profileImageUrl'] as String).isEmpty))
                               ? Icon(
                                   role == 'admin'
                                       ? Icons.admin_panel_settings
@@ -260,6 +300,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   color: Colors.white,
                                 )
                               : null,
+                        ),
+                        // Verified Badge
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: (user?['isVerified'] == true || user?['is_verified'] == true) ? Colors.green : Colors.grey,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            child: Icon(
+                              (user?['isVerified'] == true || user?['is_verified'] == true) ? Icons.check : Icons.close,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ),
                         ),
                         if (_isEditing)
                           Positioned(
@@ -289,13 +347,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    Text(
-                      user?['fullName'] ?? 'User',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E293B),
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          user?['fullName'] ?? 'User',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1E293B),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        if (user?['isVerified'] == true || user?['is_verified'] == true)
+                          const Tooltip(
+                            message: 'Verified Account',
+                            child: Icon(Icons.verified, color: Colors.green, size: 24),
+                          ),
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Container(
@@ -480,12 +549,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              const Icon(Icons.verified, size: 20, color: Colors.green),
+                              Icon(
+                                (user?['isVerified'] == true || user?['is_verified'] == true) ? Icons.verified : Icons.pending,
+                                size: 20,
+                                color: (user?['isVerified'] == true || user?['is_verified'] == true) ? Colors.green : Colors.orange,
+                              ),
                               const SizedBox(width: 8),
                               Text(
-                                user?['isVerified'] == true ? 'Verified Account' : 'Unverified Account',
+                                (user?['isVerified'] == true || user?['is_verified'] == true) ? 'Verified Account' : 'Unverified Account',
                                 style: TextStyle(
-                                  color: user?['isVerified'] == true ? Colors.green : Colors.orange,
+                                  color: (user?['isVerified'] == true || user?['is_verified'] == true) ? Colors.green : Colors.orange,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -493,7 +566,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Member since ${user?['createdAt'] != null ? DateTime.parse(user!['createdAt']).toString().split(' ')[0] : 'Unknown'}',
+                            'Member since ${user?['createdAt'] != null ? DateTime.parse(user!['createdAt'].toString()).toString().split(' ')[0] : 'Unknown'}',
                             style: const TextStyle(
                               color: Color(0xFF64748B),
                               fontSize: 14,

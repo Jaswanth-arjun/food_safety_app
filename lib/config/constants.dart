@@ -7,9 +7,9 @@ class AppConstants {
   // TODO: Add your Supabase credentials here
   // Copy from lib/config/constants.dart.example and fill in your real values
   // DO NOT COMMIT THIS FILE WITH REAL KEYS TO GIT
-  static const String supabaseUrl = 'https://YOUR_PROJECT_ID.supabase.co';
-  static const String supabaseAnonKey = 'YOUR_ANON_KEY_HERE';
-  static const String supabaseServiceRoleKey = 'YOUR_SERVICE_ROLE_KEY_HERE';
+  static const String supabaseUrl = 'https://cgdbwwgcdgdjqlevimxi.supabase.co';
+  static const String supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnZGJ3d2djZGdkanFsZXZpbXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1MTcyMjUsImV4cCI6MjA4NTA5MzIyNX0._qZqqVW74FBD5EoXtEe1q8orXhyKpMEE9dwO3B2vnDU';
+  static const String supabaseServiceRoleKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnZGJ3d2djZGdkanFsZXZpbXhpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTUxNzIyNSwiZXhwIjoyMDg1MDkzMjI1fQ.dXOuFGScC2DNZyrrcFlZneFLfwy-7j0x6xuOzOmo5Lo';
   
   // Colors
   static const Color primaryColor = Color(0xFF2196F3);

@@ -20,6 +20,9 @@ class CitizenHomeScreen extends StatefulWidget {
 class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  String _sortBy = 'name'; // name, rating, inspection_score
+  String _filterBy = 'all'; // all, safe, moderate, unsafe
+  bool _showFilters = false;
 
   @override
   void initState() {
@@ -400,6 +403,19 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
               decoration: InputDecoration(
                 hintText: 'Search restaurants...',
                 prefixIcon: const Icon(Icons.search),
+                suffixIcon: _showFilters
+                    ? IconButton(
+                        icon: const Icon(Icons.filter_list, color: Color(0xFF2563EB)),
+                        onPressed: () {
+                          setState(() => _showFilters = false);
+                        },
+                      )
+                    : IconButton(
+                        icon: const Icon(Icons.filter_list_outlined),
+                        onPressed: () {
+                          setState(() => _showFilters = true);
+                        },
+                      ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -407,6 +423,61 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
                 fillColor: Colors.white,
               ),
             ),
+            if (_showFilters) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey[300]!),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Safety Level',
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                    ),
+                    const SizedBox(height: 8),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildFilterChip('All', 'all'),
+                          const SizedBox(width: 8),
+                          _buildFilterChip('Safe (80+)', 'safe'),
+                          const SizedBox(width: 8),
+                          _buildFilterChip('Moderate (60-79)', 'moderate'),
+                          const SizedBox(width: 8),
+                          _buildFilterChip('Unsafe (<60)', 'unsafe'),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Sort By',
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                    ),
+                    const SizedBox(height: 8),
+                    DropdownButton<String>(
+                      value: _sortBy,
+                      isExpanded: true,
+                      items: [
+                        const DropdownMenuItem(value: 'name', child: Text('Name')),
+                        const DropdownMenuItem(value: 'rating', child: Text('User Rating')),
+                        const DropdownMenuItem(value: 'inspection_score', child: Text('Inspection Score')),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() => _sortBy = value);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
             
             // Restaurant List
@@ -490,11 +561,46 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
 
   List<Widget> _buildRestaurantList(RestaurantProvider restaurantProvider, ReportProvider reportProvider, RatingProvider ratingProvider) {
     print('DEBUG: _buildRestaurantList called with ${restaurantProvider.restaurants.length} restaurants');
-    final filteredRestaurants = restaurantProvider.restaurants
+    var filteredRestaurants = restaurantProvider.restaurants
         .where((restaurant) =>
             restaurant.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
             restaurant.address.toLowerCase().contains(_searchQuery.toLowerCase()))
         .toList();
+
+    // Apply safety filter
+    filteredRestaurants = filteredRestaurants.where((restaurant) {
+      final score = restaurant.lastInspectionScore ?? 0;
+      switch (_filterBy) {
+        case 'safe':
+          return score >= 80;
+        case 'moderate':
+          return score >= 60 && score < 80;
+        case 'unsafe':
+          return score < 60;
+        default:
+          return true;
+      }
+    }).toList();
+
+    // Apply sorting
+    switch (_sortBy) {
+      case 'rating':
+        filteredRestaurants.sort((a, b) {
+          final ratingA = _getRestaurantRating(a);
+          final ratingB = _getRestaurantRating(b);
+          return ratingB.compareTo(ratingA);
+        });
+        break;
+      case 'inspection_score':
+        filteredRestaurants.sort((a, b) {
+          final scoreA = a.lastInspectionScore ?? 0;
+          final scoreB = b.lastInspectionScore ?? 0;
+          return scoreB.compareTo(scoreA);
+        });
+        break;
+      default:
+        filteredRestaurants.sort((a, b) => a.name.compareTo(b.name));
+    }
 
     print('DEBUG: Filtered restaurants: ${filteredRestaurants.length}');
 
@@ -1070,6 +1176,19 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildFilterChip(String label, String value) {
+    final isSelected = _filterBy == value;
+    return FilterChip(
+      label: Text(label, style: TextStyle(color: isSelected ? Colors.white : Colors.black)),
+      selected: isSelected,
+      onSelected: (selected) {
+        setState(() => _filterBy = value);
+      },
+      backgroundColor: Colors.grey[200],
+      selectedColor: const Color(0xFF2563EB),
     );
   }
 
