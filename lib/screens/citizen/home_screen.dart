@@ -10,7 +10,7 @@ import 'report_screen.dart';
 import '../profile_screen.dart';
 import '../settings_screen.dart';
 import '../../config/constants.dart';
-import '../../widgets/brand_logo.dart';
+import '../../widgets/notification_bell.dart';
 
 class CitizenHomeScreen extends StatefulWidget {
   const CitizenHomeScreen({super.key});
@@ -226,12 +226,7 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
         centerTitle: true,
         elevation: Theme.of(context).appBarTheme.elevation ?? 0,
         actions: [
-          IconButton(
-            icon: Icon(Icons.notifications_outlined, color: Theme.of(context).iconTheme.color),
-            onPressed: () {
-              // Navigate to notifications
-            },
-          ),
+          const NotificationBell(),
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color),
             onSelected: (value) {

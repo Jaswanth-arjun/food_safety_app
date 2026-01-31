@@ -11,6 +11,7 @@ import '../profile_screen.dart';
 import '../settings_screen.dart';
 import 'system_settings.dart';
 import 'activity_screen.dart';
+import 'notification_management.dart';
 import '../../config/constants.dart';
 import '../../widgets/brand_logo.dart';
 
@@ -36,6 +37,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     const ManageRestaurantsScreen(),
     const ReviewReportsScreen(),
     const UserManagementScreen(),
+    const NotificationManagementScreen(),
     const SystemSettingsScreen(),
   ];
 
@@ -175,6 +177,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
           BottomNavigationBarItem(
             icon: Icon(Icons.people),
             label: 'Users',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            label: 'Notifications',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),

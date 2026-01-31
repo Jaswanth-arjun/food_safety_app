@@ -304,6 +304,58 @@ create trigger update_ratings_updated_at before update on ratings
   for each row execute function update_updated_at_column();
 
 -- ===========================================
+-- 9. NOTIFICATIONS TABLE (Admin Notifications)
+-- ===========================================
+
+create table notifications (
+  id uuid default uuid_generate_v4(),
+  title text,
+  message text not null,
+  recipient_type text not null check (recipient_type in ('citizens', 'inspectors', 'both')),
+  sent_by uuid references profiles(id) on delete set null,
+  created_at timestamptz default now(),
+  sent_at timestamptz,
+  is_sent boolean default false,
+  primary key (id)
+);
+
+-- ===========================================
+-- 10. USER NOTIFICATIONS TABLE (Notification Delivery)
+-- ===========================================
+
+create table user_notifications (
+  id uuid default uuid_generate_v4(),
+  notification_id uuid references notifications(id) on delete cascade,
+  user_id uuid references profiles(id) on delete cascade,
+  is_read boolean default false,
+  read_at timestamptz,
+  created_at timestamptz default now(),
+  primary key (id),
+  unique(notification_id, user_id)
+);
+
+-- ===========================================
+-- NOTIFICATIONS POLICIES
+-- ===========================================
+
+alter table notifications enable row level security;
+
+create policy "Admins can manage notifications" on notifications
+  for all using (
+    exists (select 1 from profiles where id = auth.uid() and role = 'admin')
+  );
+
+create policy "Users can view notifications sent to them" on user_notifications
+  for select using (
+    user_id = auth.uid()
+  );
+
+create policy "Admins can manage user notifications" on user_notifications
+  for all using (
+    exists (select 1 from profiles where id = auth.uid() and role = 'admin')
+  );
+
+-- ===========================================
 -- INDEXES FOR PERFORMANCE
 -- ===========================================
 
@@ -331,6 +383,16 @@ create index idx_ratings_user_id on ratings(user_id);
 create index idx_activities_user_id on activities(user_id);
 create index idx_activities_entity on activities(entity_type, entity_id);
 create index idx_activities_created_at on activities(created_at desc);
+
+create index idx_notifications_sent_by on notifications(sent_by);
+create index idx_notifications_recipient_type on notifications(recipient_type);
+create index idx_notifications_created_at on notifications(created_at desc);
+create index idx_notifications_is_sent on notifications(is_sent);
+
+create index idx_user_notifications_user_id on user_notifications(user_id);
+create index idx_user_notifications_notification_id on user_notifications(notification_id);
+create index idx_user_notifications_is_read on user_notifications(is_read);
+create index idx_user_notifications_created_at on user_notifications(created_at desc);
 
 -- ===========================================
 -- INITIAL DATA (Optional)

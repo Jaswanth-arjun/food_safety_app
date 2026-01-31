@@ -9,7 +9,7 @@ import '../profile_screen.dart';
 import '../settings_screen.dart';
 import 'dart:io';
 import '../../config/constants.dart';
-import '../../widgets/brand_logo.dart';
+import '../../widgets/notification_bell.dart';
 
 class InspectorDashboard extends StatefulWidget {
   const InspectorDashboard({super.key});
@@ -49,10 +49,7 @@ class _InspectorDashboardState extends State<InspectorDashboard> {
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {},
-          ),
+          const NotificationBell(),
           PopupMenuButton<String>(
             onSelected: (value) {
               switch (value) {
