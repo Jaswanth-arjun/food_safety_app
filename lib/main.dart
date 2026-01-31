@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:food_guard/providers/auth_provider.dart';
+import 'package:food_guard/providers/theme_provider.dart';
 import 'package:food_guard/providers/restaurant_provider.dart';
 import 'package:food_guard/providers/rating_provider.dart';
 import 'package:food_guard/providers/report_provider.dart';
@@ -15,6 +16,8 @@ import 'package:food_guard/services/supabase_service.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
+import 'package:food_guard/config/constants.dart';
+import 'package:food_guard/widgets/brand_logo.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,6 +56,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ratingProvider),
         ChangeNotifierProvider(create: (_) => RestaurantProvider(ratingProvider: ratingProvider)),
@@ -71,7 +75,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Food Safety Monitor',
+      title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
@@ -368,16 +372,12 @@ class AppWrapper extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.restaurant_menu,
-                  size: 60,
-                  color: Colors.white,
-                ),
+                  child: BrandLogo.large(),
               ),
               const SizedBox(height: 32),
-              const Text(
-                'Food Safety Monitor',
-                style: TextStyle(
+              Text(
+                AppConstants.appName,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
@@ -405,10 +405,7 @@ class AppWrapper extends StatelessWidget {
                 ),
                 child: const Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 3,
-                  ),
+                  child: Center(child: LogoSpinner(size: 20)),
                 ),
               ),
             ],

@@ -673,6 +673,33 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Send a password reset email using Supabase auth
+  Future<bool> sendPasswordResetEmail(String email) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    // Basic validation to avoid complex regex mangling during automated edits
+    if (!email.contains('@') || !email.contains('.')) {
+      _error = 'Please enter a valid email address';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+
+    try {
+      await SupabaseService.client.auth.resetPasswordForEmail(email);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = 'Failed to send reset email: $e';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
   // Admin methods
   Future<void> fetchAllUsers() async {
     try {

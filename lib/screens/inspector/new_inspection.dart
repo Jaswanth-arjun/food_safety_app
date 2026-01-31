@@ -5,6 +5,7 @@ import 'dart:io';
 import '../../providers/inspection_provider.dart';
 import '../../providers/restaurant_provider.dart';
 import '../../models/inspection.dart';
+import '../../widgets/brand_logo.dart';
 
 class NewInspectionScreen extends StatefulWidget {
   final String? inspectionId;
@@ -320,10 +321,10 @@ class _NewInspectionScreenState extends State<NewInspectionScreen> {
               child: ElevatedButton.icon(
                 onPressed: _isLoading ? null : _submitInspection,
                 icon: _isLoading
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(color: Colors.white),
+                        child: LogoSpinner(size: 20),
                       )
                     : const Icon(Icons.check_circle, size: 20),
                 label: _isLoading

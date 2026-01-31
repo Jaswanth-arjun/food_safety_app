@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import 'registration_screen.dart';
+import 'forgot_password_screen.dart';
+import '../../widgets/brand_logo.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -60,11 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.restaurant_menu,
-                          size: 50,
-                          color: Colors.white,
-                        ),
+                        child: BrandLogo(size: 50),
                       ),
                       const SizedBox(height: 24),
                       Text(
@@ -76,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Sign in to continue monitoring food safety',
+                        'Sign in to continue with Food Guard',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: const Color(0xFF64748B),
                         ),
@@ -224,12 +222,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () {
-                            // Navigate to forgot password
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+                            );
                           },
                           child: Text(
                             'Forgot Password?',
                             style: TextStyle(
-                              color: const Color(0xFF2563EB),
+                              color: Theme.of(context).colorScheme.primary,
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                               fontFamily: 'Inter',
@@ -273,13 +273,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           child: authProvider.isLoading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 24,
                                   height: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
+                                  child: LogoSpinner(size: 18),
                                 )
                               : Row(
                                   mainAxisAlignment: MainAxisAlignment.center,

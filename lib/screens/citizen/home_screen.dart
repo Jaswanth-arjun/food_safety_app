@@ -9,6 +9,8 @@ import '../../models/user_review.dart';
 import 'report_screen.dart';
 import '../profile_screen.dart';
 import '../settings_screen.dart';
+import '../../config/constants.dart';
+import '../../widgets/brand_logo.dart';
 
 class CitizenHomeScreen extends StatefulWidget {
   const CitizenHomeScreen({super.key});
@@ -193,6 +195,11 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
     );
   }
 
+  void _rateRestaurant(BuildContext context, Restaurant restaurant, RatingProvider ratingProvider) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    _showRatingDialog(context, restaurant, ratingProvider, authProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     print('DEBUG: CitizenHomeScreen build method called on ${Theme.of(context).platform}');
@@ -206,29 +213,27 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
     print('DEBUG: Device pixel ratio: ${MediaQuery.of(context).devicePixelRatio}');
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.restaurant_menu, color: const Color(0xFF1E293B)),
+            const BrandLogo.small(),
             const SizedBox(width: 8),
-            const Text('Food Safety Monitor'),
+            Flexible(child: Text(AppConstants.appName, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600))),
           ],
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        foregroundColor: const Color(0xFF1E293B),
+        elevation: Theme.of(context).appBarTheme.elevation ?? 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Color(0xFF64748B)),
+            icon: Icon(Icons.notifications_outlined, color: Theme.of(context).iconTheme.color),
             onPressed: () {
               // Navigate to notifications
             },
           ),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: Color(0xFF64748B)),
+            icon: Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color),
             onSelected: (value) {
               switch (value) {
                 case 'profile':
@@ -287,53 +292,6 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Welcome Card
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Welcome ${authProvider.currentUser?['name'] ?? 'Citizen'}!',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Browse restaurants, check ratings, and report food safety issues.',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () => _showRestaurantSelectionDialog(context),
-                            icon: const Icon(Icons.star, size: 20),
-                            label: const Text('Rate Restaurant'),
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            
             // Stats Cards
             Row(
               children: [
@@ -637,11 +595,7 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          onTap: () {
-            final reportProvider = Provider.of<ReportProvider>(context, listen: false);
-            final ratingProvider = Provider.of<RatingProvider>(context, listen: false);
-            _showRestaurantDetails(context, restaurant, reportProvider, ratingProvider);
-          },
+          onTap: () => _showRestaurantDetails(context, restaurant, reportProvider, ratingProvider),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -724,6 +678,50 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
                     Text(
                       '${_getRestaurantReportsCount(restaurant, reportProvider)} reports',
                       style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ReportScreen(
+                              restaurantId: restaurant.id,
+                              restaurantName: restaurant.name,
+                            ),
+                          ),
+                        ),
+                        icon: const Icon(Icons.report, size: 16),
+                        label: const Text('Report Issue'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.deepPurple,
+                          side: const BorderSide(color: Colors.deepPurple),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () => _rateRestaurant(context, restaurant, ratingProvider),
+                        icon: const Icon(Icons.star, size: 16),
+                        label: const Text('Rate Restaurant'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -1033,6 +1031,7 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               backgroundColor: const Color(0xFF2563EB),
+                              foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -1196,204 +1195,6 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-}
-
-class RestaurantCard extends StatelessWidget {
-  final Restaurant restaurant;
-
-  const RestaurantCard({super.key, required this.restaurant});
-
-  @override
-  Widget build(BuildContext context) {
-    final score = restaurant.lastInspectionScore ?? 0;
-    final scoreColor = _getScoreColor(score);
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Restaurant Name and Score
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    restaurant.name,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: scoreColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: scoreColor),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _getScoreIcon(score),
-                        color: scoreColor,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        score > 0 ? '$score' : 'N/A',
-                        style: TextStyle(
-                          color: scoreColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // Address
-            Row(
-              children: [
-                const Icon(Icons.location_on, size: 16, color: Colors.grey),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    restaurant.address,
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // Phone (if available)
-            if (restaurant.phone.isNotEmpty)
-              Row(
-                children: [
-                  const Icon(Icons.phone, size: 16, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Text(
-                    restaurant.phone,
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            
-            const SizedBox(height: 12),
-            
-            // Last Inspection Date
-            if (restaurant.lastInspectionDate != null)
-              Text(
-                'Last inspected: ${restaurant.formattedLastInspectionDate}',
-                style: const TextStyle(
-                  color: Colors.blue,
-                  fontSize: 12,
-                ),
-              ),
-            
-            const SizedBox(height: 12),
-            
-            // Action Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ReportScreen(
-                            restaurantId: restaurant.id,
-                            restaurantName: restaurant.name,
-                          ),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.report, size: 16),
-                    label: const Text('Report Issue'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.deepPurple,
-                      side: const BorderSide(color: Colors.deepPurple),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      _showRestaurantDetailsSimple(context, restaurant);
-                    },
-                    icon: const Icon(Icons.info, size: 16),
-                    label: const Text('Details'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showRestaurantDetailsSimple(BuildContext context, Restaurant restaurant) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return RestaurantDetailsSheet(restaurant: restaurant);
-      },
-    );
-  }
-
-  Color _getScoreColor(int score) {
-    if (score >= 90) return Colors.green;
-    if (score >= 70) return Colors.lightGreen;
-    if (score >= 50) return Colors.orange;
-    return Colors.red;
-  }
-
-  IconData _getScoreIcon(int score) {
-    if (score >= 90) return Icons.verified;
-    if (score >= 70) return Icons.check_circle;
-    if (score >= 50) return Icons.warning;
-    return Icons.error;
   }
 }
 

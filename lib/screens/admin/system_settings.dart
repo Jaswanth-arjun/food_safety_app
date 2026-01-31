@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../widgets/brand_logo.dart';
 
 class SystemSettingsScreen extends StatefulWidget {
   const SystemSettingsScreen({super.key});
@@ -61,7 +62,7 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
         elevation: 4,
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: LogoSpinner(size: 28))
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(

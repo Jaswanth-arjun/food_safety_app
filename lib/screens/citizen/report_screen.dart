@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:food_guard/providers/report_provider.dart';
 import 'package:food_guard/providers/auth_provider.dart';
+import '../../widgets/brand_logo.dart';
 
 class ReportScreen extends StatefulWidget {
   final String? restaurantId;
@@ -459,13 +460,10 @@ class _ReportScreenState extends State<ReportScreen> {
                     ),
                   ),
                   child: _isSubmitting
-                      ? const SizedBox(
+                      ? SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
+                          child: LogoSpinner(size: 20),
                         )
                       : const Text(
                           'Submit Report',

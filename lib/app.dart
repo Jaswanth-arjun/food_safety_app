@@ -1,50 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:food_guard/providers/auth_provider.dart';
+import 'package:food_guard/providers/theme_provider.dart';
 import 'package:food_guard/screens/auth/login_screen.dart';
 import 'package:food_guard/screens/citizen/home_screen.dart';
 import 'package:food_guard/screens/inspector/dashboard.dart';
 import 'package:food_guard/screens/admin/admin_dashboard.dart';
+import 'package:food_guard/config/constants.dart';
+import 'package:food_guard/widgets/brand_logo.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Food Safety App',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.deepPurple,
-          foregroundColor: Colors.white,
-          elevation: 4,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.deepPurple,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          filled: true,
-          fillColor: Colors.grey[50],
-        ),
-        cardTheme: const CardThemeData(
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-          ),
-        ),
-      ),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, _) {
+        return MaterialApp(
+          title: AppConstants.appName,
+          theme: themeProvider.lightTheme,
+          darkTheme: themeProvider.darkTheme,
+          themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {
           print('DEBUG: App.dart Consumer - isLoading: ${authProvider.isLoading}, isAuthenticated: ${authProvider.isAuthenticated}, userRole: ${authProvider.userRole}');
@@ -83,6 +59,8 @@ class App extends StatelessWidget {
         '/admin': (context) => const AdminDashboard(),
       },
       debugShowCheckedModeBanner: false,
+        );
+      },
     );
   }
 }
@@ -112,16 +90,12 @@ class SplashScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(
-                Icons.restaurant_menu,
-                size: 70,
-                color: Colors.deepPurple,
-              ),
+              child: BrandLogo.large(),
             ),
             const SizedBox(height: 30),
-            const Text(
-              'Food Safety Monitor',
-              style: TextStyle(
+            Text(
+              AppConstants.appName,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -146,9 +120,10 @@ class SplashScreen extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(40),
               ),
-              child: const CircularProgressIndicator(
-                strokeWidth: 3,
-                color: Colors.white,
+              child: const SizedBox(
+                width: 40,
+                height: 40,
+                child: Center(child: LogoSpinner(size: 36)),
               ),
             ),
             const SizedBox(height: 40),

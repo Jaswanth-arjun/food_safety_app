@@ -11,6 +11,8 @@ import '../profile_screen.dart';
 import '../settings_screen.dart';
 import 'system_settings.dart';
 import 'activity_screen.dart';
+import '../../config/constants.dart';
+import '../../widgets/brand_logo.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -84,9 +86,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.restaurant_menu, color: Colors.white),
+            const BrandLogo(size: 28),
             const SizedBox(width: 8),
-            const Text('Food Safety Monitor'),
+            Flexible(child: Text(AppConstants.appName, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600))),
           ],
         ),
         centerTitle: true,
@@ -241,7 +243,7 @@ class DashboardHome extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Manage food safety monitoring system',
+                          'Manage Food Guard system',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],
@@ -593,6 +595,8 @@ class DashboardHome extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,

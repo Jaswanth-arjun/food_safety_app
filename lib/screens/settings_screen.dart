@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/auth_provider.dart';
+import '../providers/theme_provider.dart';
+import 'auth/forgot_password_screen.dart';
+import '../config/constants.dart';
+import '../widgets/brand_logo.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -55,17 +59,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(title: const Text('Settings')),
-        body: const Center(child: CircularProgressIndicator()),
+        body: Center(child: LogoSpinner(size: 28)),
       );
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Settings'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        foregroundColor: const Color(0xFF1E293B),
+        // Use app theme for AppBar so it follows light/dark
+        elevation: Theme.of(context).appBarTheme.elevation ?? 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -76,7 +79,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -89,12 +92,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Account Settings',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF1E293B),
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -125,15 +128,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           borderRadius: BorderRadius.circular(25),
                         ),
                         child: (user?['profileImageUrl'] == null || (user?['profileImageUrl'] as String).isEmpty)
-                            ? Icon(
-                                user?['role'] == 'admin'
-                                    ? Icons.admin_panel_settings
-                                    : user?['role'] == 'inspector'
-                                        ? Icons.search
-                                        : Icons.person,
-                                color: Colors.white,
-                                size: 24,
-                              )
+                            ? BrandLogo(size: 24, circle: true)
                             : null,
                       ),
                       const SizedBox(width: 16),
@@ -203,7 +198,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -216,12 +211,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'App Preferences',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF1E293B),
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -239,7 +234,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.language, color: const Color(0xFF64748B)),
+                            Icon(Icons.language, color: Theme.of(context).iconTheme.color),
                             const SizedBox(width: 12),
                             const Text(
                               'Language',
@@ -286,7 +281,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Row(
                           children: [
-                            Icon(_theme == 'Dark' ? Icons.dark_mode : Icons.light_mode, color: const Color(0xFF64748B)),
+                            Consumer<ThemeProvider>(
+                              builder: (_, themeProvider, __) {
+                                return Icon(
+                                  themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                                  color: const Color(0xFF64748B),
+                                );
+                              },
+                            ),
                             const SizedBox(width: 12),
                             const Text(
                               'Theme',
@@ -298,20 +300,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           ],
                         ),
-                        DropdownButton<String>(
-                          value: _theme,
-                          underline: const SizedBox(),
-                          items: ['Light', 'Dark'].map((theme) {
-                            return DropdownMenuItem(value: theme, child: Text(theme));
-                          }).toList(),
-                          onChanged: (newTheme) {
-                            if (newTheme != null) {
-                              setState(() => _theme = newTheme);
-                              _saveSetting('theme', newTheme);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Theme changed to $newTheme')),
-                              );
-                            }
+                        Consumer<ThemeProvider>(
+                          builder: (_, themeProvider, __) {
+                            return DropdownButton<String>(
+                              value: themeProvider.isDarkMode ? 'Dark' : 'Light',
+                              underline: const SizedBox(),
+                              items: ['Light', 'Dark'].map((theme) {
+                                return DropdownMenuItem(value: theme, child: Text(theme));
+                              }).toList(),
+                              onChanged: (newTheme) {
+                                if (newTheme != null) {
+                                  // Explicitly set theme instead of toggling so value is deterministic
+                                  Provider.of<ThemeProvider>(context, listen: false)
+                                      .setDarkMode(newTheme == 'Dark');
+                                  _saveSetting('theme', newTheme);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Theme changed to $newTheme'),
+                                    ),
+                                  );
+                                }
+                              },
+                            );
                           },
                         ),
                       ],
@@ -327,7 +337,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -340,12 +350,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Notifications & Privacy',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF1E293B),
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -356,7 +366,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.notifications, color: const Color(0xFF64748B)),
+                            Icon(Icons.notifications, color: Theme.of(context).iconTheme.color),
                           const SizedBox(width: 12),
                           const Text(
                             'Push Notifications',
@@ -392,7 +402,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.location_on, color: const Color(0xFF64748B)),
+                          Icon(Icons.location_on, color: Theme.of(context).iconTheme.color),
                           const SizedBox(width: 12),
                           const Text(
                             'Location Services',
@@ -428,7 +438,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.analytics, color: const Color(0xFF64748B)),
+                          Icon(Icons.analytics, color: Theme.of(context).iconTheme.color),
                           const SizedBox(width: 12),
                           const Text(
                             'Usage Analytics',
@@ -465,7 +475,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -478,12 +488,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Account Actions',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF1E293B),
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -493,18 +503,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     width: double.infinity,
                     child: OutlinedButton(
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Change password feature coming soon')),
-                        );
+                        // Navigate to password reset (reuse forgot password screen)
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()));
                       },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        side: const BorderSide(color: Color(0xFF2563EB)),
+                        side: BorderSide(color: Theme.of(context).colorScheme.primary),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Change Password',
                         style: TextStyle(
-                          color: Color(0xFF2563EB),
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -563,7 +572,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 children: [
                   Text(
-                    'Food Safety Monitor v1.0.0',
+                    '${AppConstants.appName} v1.0.0',
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 12,
@@ -571,7 +580,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '© 2026 Food Safety Authority',
+                    '© 2026 Food Guard Authority',
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 12,

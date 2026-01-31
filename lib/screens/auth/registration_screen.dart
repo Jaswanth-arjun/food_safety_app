@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../widgets/brand_logo.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -44,21 +45,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back,
-            color: Color(0xFF64748B),
+            color: Theme.of(context).iconTheme.color,
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Create Account',
           style: TextStyle(
-            color: const Color(0xFF1E293B),
+            color: Theme.of(context).textTheme.titleLarge?.color,
             fontSize: 18,
             fontWeight: FontWeight.w600,
             fontFamily: 'Inter',
@@ -95,15 +96,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             ),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.person_add,
-                          size: 36,
-                          color: Colors.white,
-                        ),
+                        child: const BrandLogo.medium(),
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Join Food Safety Monitor',
+                        'Join Food Guard',
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.w700,
                           color: const Color(0xFF1E293B),
@@ -495,13 +492,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           child: ElevatedButton.icon(
                             onPressed: authProvider.isLoading ? null : _register,
                             icon: authProvider.isLoading
-                                ? const SizedBox(
+                                ? SizedBox(
                                     width: 20,
                                     height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                    ),
+                                    child: LogoSpinner(size: 16),
                                   )
                                 : const Icon(Icons.person_add, size: 20),
                             label: Text(

@@ -8,6 +8,8 @@ import 'new_inspection.dart';
 import '../profile_screen.dart';
 import '../settings_screen.dart';
 import 'dart:io';
+import '../../config/constants.dart';
+import '../../widgets/brand_logo.dart';
 
 class InspectorDashboard extends StatefulWidget {
   const InspectorDashboard({super.key});
@@ -40,9 +42,9 @@ class _InspectorDashboardState extends State<InspectorDashboard> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.restaurant_menu, color: Colors.white),
+            const BrandLogo.small(),
             const SizedBox(width: 8),
-            const Text('Food Safety Monitor'),
+            Flexible(child: Text(AppConstants.appName, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600),)),
           ],
         ),
         centerTitle: true,
@@ -697,13 +699,17 @@ class _InspectorDashboardState extends State<InspectorDashboard> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const AlertDialog(
+      builder: (context) => AlertDialog(
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Analyzing images with YOLOv8 AI model...'),
+            SizedBox(
+              height: 28,
+              width: 28,
+              child: LogoSpinner(size: 28),
+            ),
+            const SizedBox(height: 16),
+            const Text('Analyzing images with YOLOv8 AI model...'),
           ],
         ),
       ),

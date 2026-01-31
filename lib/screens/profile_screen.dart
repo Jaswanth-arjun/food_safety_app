@@ -5,6 +5,7 @@ import 'dart:io';
 import '../../providers/auth_provider.dart';
 import '../../services/supabase_service.dart';
 import 'package:path/path.dart' as path;
+import '../../widgets/brand_logo.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -31,11 +32,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     final user = Provider.of<AuthProvider>(context, listen: false).currentUser;
-    _nameController = TextEditingController(text: user?['fullName'] ?? '');
+    _nameController = TextEditingController(text: user?['full_name'] ?? '');
     _emailController = TextEditingController(text: user?['email'] ?? '');
-    _phoneController = TextEditingController(text: user?['phoneNumber'] ?? '');
+    _phoneController = TextEditingController(text: user?['phone'] ?? '');
     _departmentController = TextEditingController(text: user?['department'] ?? '');
-    _licenseController = TextEditingController(text: user?['licenseNumber'] ?? '');
+    _licenseController = TextEditingController(text: user?['license_number'] ?? '');
     _organizationController = TextEditingController(text: user?['organization'] ?? '');
   }
 
@@ -129,8 +130,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = authProvider.currentUser;
 
     Map<String, dynamic> updatedData = {
-      'fullName': _nameController.text.trim(),
-      'phoneNumber': _phoneController.text.trim(),
+      'full_name': _nameController.text.trim(),
+      'phone': _phoneController.text.trim(),
     };
 
     // Handle image upload
@@ -150,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             .from('avatars')
             .getPublicUrl(filePath);
 
-        updatedData['profileImageUrl'] = imageUrl;
+        updatedData['profile_image_url'] = imageUrl;
       } catch (e) {
         print('Error uploading image: $e');
         ScaffoldMessenger.of(context).showSnackBar(
@@ -168,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (user?['role'] == 'inspector') {
       updatedData.addAll({
         'department': _departmentController.text.trim(),
-        'licenseNumber': _licenseController.text.trim(),
+        'license_number': _licenseController.text.trim(),
       });
     } else if (user?['role'] == 'admin') {
       updatedData['organization'] = _organizationController.text.trim();
@@ -203,12 +204,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final role = user?['role'] ?? 'citizen';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Profile'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        foregroundColor: const Color(0xFF1E293B),
+        elevation: Theme.of(context).appBarTheme.elevation ?? 0,
         actions: [
           if (!_isEditing)
             IconButton(
@@ -225,10 +224,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 TextButton(
                   onPressed: _isLoading ? null : _saveProfile,
                   child: _isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: LogoSpinner(size: 20),
                         )
                       : const Text('Save', style: TextStyle(color: Color(0xFF2563EB))),
                 ),
@@ -259,13 +258,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     image: FileImage(_profileImage!),
                                     fit: BoxFit.cover,
                                   )
-                                : (user?['profileImageUrl'] != null && (user?['profileImageUrl'] as String).isNotEmpty)
+                                : (user?['profile_image_url'] != null && (user?['profile_image_url'] as String).isNotEmpty)
                                     ? DecorationImage(
-                                        image: NetworkImage(user?['profileImageUrl']),
+                                        image: NetworkImage(user?['profile_image_url']),
                                         fit: BoxFit.cover,
                                       )
                                     : null,
-                            gradient: (_profileImage == null && (user?['profileImageUrl'] == null || (user?['profileImageUrl'] as String).isEmpty))
+                            gradient: (_profileImage == null && (user?['profile_image_url'] == null || (user?['profile_image_url'] as String).isEmpty))
                                 ? LinearGradient(
                                     colors: role == 'admin'
                                         ? [Colors.deepPurple, Colors.purple]
@@ -289,16 +288,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ],
                           ),
-                          child: (_profileImage == null && (user?['profileImageUrl'] == null || (user?['profileImageUrl'] as String).isEmpty))
-                              ? Icon(
-                                  role == 'admin'
-                                      ? Icons.admin_panel_settings
-                                      : role == 'inspector'
-                                          ? Icons.search
-                                          : Icons.person,
-                                  size: 60,
-                                  color: Colors.white,
-                                )
+                          child: (_profileImage == null && (user?['profile_image_url'] == null || (user?['profile_image_url'] as String).isEmpty))
+                              ? BrandLogo(size: 60, circle: true)
                               : null,
                         ),
                         // Verified Badge
@@ -351,7 +342,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          user?['fullName'] ?? 'User',
+                          user?['full_name'] ?? 'User',
                           style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../providers/activity_provider.dart';
+import '../../widgets/brand_logo.dart';
 
 class ActivityScreen extends StatefulWidget {
   const ActivityScreen({super.key});
@@ -84,7 +85,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
           // Activity List
           Expanded(
             child: activityProvider.isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(child: LogoSpinner(size: 28))
                 : _buildActivityList(activityProvider),
           ),
         ],
