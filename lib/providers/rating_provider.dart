@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import '../models/user_review.dart';
-import '../models/restaurant.dart';
 import '../services/mock_data.dart';
 
 class RatingProvider with ChangeNotifier {

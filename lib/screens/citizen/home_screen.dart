@@ -11,6 +11,7 @@ import '../profile_screen.dart';
 import '../settings_screen.dart';
 import '../../config/constants.dart';
 import '../../widgets/notification_bell.dart';
+import '../../widgets/brand_logo.dart';
 
 class CitizenHomeScreen extends StatefulWidget {
   const CitizenHomeScreen({super.key});

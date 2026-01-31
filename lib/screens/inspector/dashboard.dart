@@ -10,6 +10,7 @@ import '../settings_screen.dart';
 import 'dart:io';
 import '../../config/constants.dart';
 import '../../widgets/notification_bell.dart';
+import '../../widgets/brand_logo.dart';
 
 class InspectorDashboard extends StatefulWidget {
   const InspectorDashboard({super.key});

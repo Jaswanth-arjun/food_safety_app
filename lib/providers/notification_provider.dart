@@ -40,23 +40,42 @@ class NotificationProvider with ChangeNotifier {
 
   // Load user notifications (for citizens/inspectors)
   Future<void> loadUserNotifications(String userId) async {
+    print('🔍 DEBUG: loadUserNotifications called for userId: $userId');
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
+      print('🔍 DEBUG: Executing query for user_notifications where user_id = $userId');
       final response = await SupabaseService.client
           .from('user_notifications')
           .select('*, notifications(*)')
           .eq('user_id', userId)
           .order('created_at', ascending: false);
 
+      print('🔍 DEBUG: Query completed. Raw response length: ${response.length}');
+      print('🔍 DEBUG: First item structure: ${response.isNotEmpty ? response[0] : "No items"}');
+
       _userNotifications = response.map<UserNotification>((json) {
-        return UserNotification.fromJson(json);
+        print('🔍 DEBUG: Processing notification JSON: $json');
+        try {
+          final userNotif = UserNotification.fromJson(json);
+          print('🔍 DEBUG: Successfully created UserNotification: ${userNotif.notification.title}');
+          return userNotif;
+        } catch (e) {
+          print('❌ DEBUG: Failed to parse UserNotification: $e');
+          rethrow;
+        }
       }).toList();
+
+      print('✅ DEBUG: Successfully loaded ${_userNotifications.length} user notifications');
+      for (var notif in _userNotifications) {
+        print('✅ DEBUG: Notification: "${notif.notification.title}" - Read: ${notif.isRead}');
+      }
 
       _error = null;
     } catch (e) {
+      print('❌ DEBUG: loadUserNotifications failed: $e');
       _error = 'Failed to load user notifications: $e';
     } finally {
       _isLoading = false;
@@ -93,26 +112,28 @@ class NotificationProvider with ChangeNotifier {
       final notificationId = notificationResponse['id'];
 
       // Get recipients based on type
-      String roleFilter;
+      List<dynamic> usersResponse = [];
       switch (recipientType) {
         case 'citizens':
-          roleFilter = 'citizen';
+          usersResponse = await SupabaseService.client
+              .rpc('get_users_for_notifications', params: {'recipient_type': recipientType});
           break;
         case 'inspectors':
-          roleFilter = 'inspector';
+          usersResponse = await SupabaseService.client
+              .rpc('get_users_for_notifications', params: {'recipient_type': recipientType});
           break;
         case 'both':
-          roleFilter = 'citizen,inspector';
+          usersResponse = await SupabaseService.client
+              .rpc('get_users_for_notifications', params: {'recipient_type': recipientType});
           break;
         default:
           throw Exception('Invalid recipient type');
       }
 
-      // Get all users with the specified role(s)
-      final usersResponse = await SupabaseService.client
-          .from('profiles')
-          .select('id')
-          .in('role', roleFilter == 'citizen,inspector' ? ['citizen', 'inspector'] : [roleFilter]);
+      print('📊 DEBUG: Final user count for notification: ${usersResponse.length}');
+      for (var user in usersResponse) {
+        print('👤 DEBUG: Will notify: ${user['full_name']} (${user['role']}) - ID: ${user['id']}');
+      }
 
       // Create user notification records
       final userNotifications = usersResponse.map((user) => {
@@ -120,10 +141,17 @@ class NotificationProvider with ChangeNotifier {
         'user_id': user['id'],
       }).toList();
 
+      print('📝 DEBUG: Prepared ${userNotifications.length} user notification records to insert');
+      print('📝 DEBUG: User notification data: $userNotifications');
+
       if (userNotifications.isNotEmpty) {
+        print('💾 DEBUG: Inserting user notifications into database...');
         await SupabaseService.client
             .from('user_notifications')
             .insert(userNotifications);
+        print('✅ DEBUG: User notifications inserted successfully');
+      } else {
+        print('⚠️ DEBUG: No user notifications to create - no users found');
       }
 
       // Reload notifications

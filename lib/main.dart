@@ -6,6 +6,7 @@ import 'package:food_guard/providers/restaurant_provider.dart';
 import 'package:food_guard/providers/rating_provider.dart';
 import 'package:food_guard/providers/report_provider.dart';
 import 'package:food_guard/providers/inspection_provider.dart';
+import 'package:food_guard/providers/activity_provider.dart';
 import 'package:food_guard/providers/notification_provider.dart';
 import 'package:food_guard/screens/auth/login_screen.dart';
 import 'package:food_guard/screens/citizen/home_screen.dart';

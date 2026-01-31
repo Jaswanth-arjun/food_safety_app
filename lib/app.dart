@@ -7,6 +7,7 @@ import 'package:food_guard/screens/citizen/home_screen.dart';
 import 'package:food_guard/screens/inspector/dashboard.dart';
 import 'package:food_guard/screens/admin/admin_dashboard.dart';
 import 'package:food_guard/config/constants.dart';
+import 'package:food_guard/providers/notification_provider.dart';
 import 'package:food_guard/widgets/brand_logo.dart';
 
 class App extends StatelessWidget {
@@ -39,9 +40,35 @@ class App extends StatelessWidget {
           switch (authProvider.userRole) {
             case 'citizen':
               print('DEBUG: Routing to CitizenHomeScreen');
+              // Load user notifications
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                print('🔄 DEBUG: addPostFrameCallback triggered for citizen');
+                final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+                final userId = authProvider.currentUser?['id'];
+                print('🔄 DEBUG: Citizen userId: $userId');
+                if (userId != null) {
+                  print('🔄 DEBUG: Calling loadUserNotifications for citizen');
+                  notificationProvider.loadUserNotifications(userId);
+                } else {
+                  print('❌ DEBUG: Citizen userId is null');
+                }
+              });
               return const CitizenHomeScreen();
             case 'inspector':
               print('DEBUG: Routing to InspectorDashboard');
+              // Load user notifications
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                print('🔄 DEBUG: addPostFrameCallback triggered for inspector');
+                final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+                final userId = authProvider.currentUser?['id'];
+                print('🔄 DEBUG: Inspector userId: $userId');
+                if (userId != null) {
+                  print('🔄 DEBUG: Calling loadUserNotifications for inspector');
+                  notificationProvider.loadUserNotifications(userId);
+                } else {
+                  print('❌ DEBUG: Inspector userId is null');
+                }
+              });
               return const InspectorDashboard();
             case 'admin':
               print('DEBUG: Routing to AdminDashboard');
@@ -120,7 +147,7 @@ class SplashScreen extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(40),
               ),
-              child: const SizedBox(
+              child: SizedBox(
                 width: 40,
                 height: 40,
                 child: Center(child: LogoSpinner(size: 36)),

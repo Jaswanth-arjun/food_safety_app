@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../widgets/brand_logo.dart';
+import 'notification_management.dart';
 
 class SystemSettingsScreen extends StatefulWidget {
   const SystemSettingsScreen({super.key});
@@ -151,6 +152,24 @@ class _SystemSettingsScreenState extends State<SystemSettingsScreen> {
                     onChanged: (value) {
                       setState(() => _reportAutoApprovalThreshold = value!);
                       _saveSetting('report_auto_approval_threshold', value);
+                    },
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Notification Management
+                  _buildSectionHeader('Notification Management'),
+                  _buildActionButton(
+                    title: 'Send Notifications',
+                    subtitle: 'Send notifications to citizens, inspectors, or all users',
+                    icon: Icons.notifications_active,
+                    color: Colors.deepPurple,
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const NotificationManagementScreen(),
+                        ),
+                      );
                     },
                   ),
 
