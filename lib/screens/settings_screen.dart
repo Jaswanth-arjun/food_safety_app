@@ -108,13 +108,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          image: (user?['profileImageUrl'] != null && (user?['profileImageUrl'] as String).isNotEmpty)
+                          image: (user?['profile_image_url'] != null && (user?['profile_image_url'] as String).isNotEmpty)
                               ? DecorationImage(
-                                  image: NetworkImage(user?['profileImageUrl']),
+                                  image: NetworkImage(user?['profile_image_url']),
                                   fit: BoxFit.cover,
                                 )
                               : null,
-                          gradient: (user?['profileImageUrl'] == null || (user?['profileImageUrl'] as String).isEmpty)
+                          gradient: (user?['profile_image_url'] == null || (user?['profile_image_url'] as String).isEmpty)
                               ? LinearGradient(
                                   colors: user?['role'] == 'admin'
                                       ? [Colors.deepPurple, Colors.purple]
@@ -127,8 +127,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               : null,
                           borderRadius: BorderRadius.circular(25),
                         ),
-                        child: (user?['profileImageUrl'] == null || (user?['profileImageUrl'] as String).isEmpty)
-                            ? BrandLogo(size: 24, circle: true)
+                        child: (user?['profile_image_url'] == null || (user?['profile_image_url'] as String).isEmpty)
+                            ? Center(
+                                child: Text(
+                                  user?['full_name']?.substring(0, 1).toUpperCase() ?? 'U',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )
                             : null,
                       ),
                       const SizedBox(width: 16),
@@ -139,7 +148,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             Row(
                               children: [
                                 Text(
-                                  user?['fullName'] ?? 'User',
+                                  user?['full_name'] ?? 'User',
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,

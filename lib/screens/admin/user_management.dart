@@ -44,7 +44,7 @@ class UserListTile extends StatelessWidget {
         leading: CircleAvatar(
           backgroundColor: roleColor.withOpacity(0.2),
           child: Text(
-            (user['name']?[0] ?? user['fullName']?[0] ?? 'U').toString().toUpperCase(),
+            (user['name']?[0] ?? user['full_name']?[0] ?? 'U').toString().toUpperCase(),
             style: TextStyle(
               color: roleColor,
               fontWeight: FontWeight.bold,
@@ -52,7 +52,7 @@ class UserListTile extends StatelessWidget {
           ),
         ),
         title: Text(
-          user['name'] ?? user['fullName'] ?? 'Unknown User',
+          user['name'] ?? user['full_name'] ?? 'Unknown User',
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
@@ -206,7 +206,7 @@ class UserListTile extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete User'),
-        content: Text('Are you sure you want to delete ${user['name'] ?? user['fullName']}?'),
+        content: Text('Are you sure you want to delete ${user['name'] ?? user['full_name']}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

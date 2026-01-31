@@ -289,7 +289,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
                           child: (_profileImage == null && (user?['profile_image_url'] == null || (user?['profile_image_url'] as String).isEmpty))
-                              ? BrandLogo(size: 60, circle: true)
+                              ? Center(
+                                  child: Text(
+                                    user?['full_name']?.substring(0, 1).toUpperCase() ?? 'U',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 48,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                )
                               : null,
                         ),
                         // Verified Badge

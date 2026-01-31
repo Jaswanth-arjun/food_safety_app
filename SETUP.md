@@ -28,7 +28,16 @@ Your Supabase credentials are **not included** in this repository for security r
    static const String supabaseServiceRoleKey = 'YOUR_SERVICE_ROLE_KEY_HERE';
    ```
 
-### 3. Run the App
+### 3. Set Up Supabase Storage
+
+1. Go to your Supabase Dashboard
+2. Navigate to **Storage** in the sidebar
+3. Click **Create bucket**
+4. Name it `avatars` (all lowercase)
+5. Set it as **Public** (so profile images can be viewed)
+6. Click **Create bucket**
+
+### 4. Run the App
 
 ```bash
 flutter pub get

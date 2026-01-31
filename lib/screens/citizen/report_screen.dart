@@ -399,7 +399,7 @@ class _ReportScreenState extends State<ReportScreen> {
 
                             try {
                               // Get current user info
-                              final reporterName = currentUser?['fullName'] ?? 
+                              final reporterName = currentUser?['full_name'] ?? 
                                                  currentUser?['name'] ?? 
                                                  'Anonymous';
                               final reporterId = currentUser?['id'] ?? 'unknown';

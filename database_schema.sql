@@ -20,6 +20,7 @@ create table profiles (
   department text,
   license_number text,
   organization text,
+  profile_image_url text,
   is_active boolean default true,
   is_verified boolean default false,
   created_at timestamptz default now(),

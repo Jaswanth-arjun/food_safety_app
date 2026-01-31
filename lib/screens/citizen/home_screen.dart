@@ -165,7 +165,7 @@ class _CitizenHomeScreenState extends State<CitizenHomeScreen> {
                   id: existingReview?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
                   restaurantId: restaurant.id,
                   userId: currentUser['id'],
-                  userName: currentUser['name'] ?? currentUser['fullName'] ?? 'Anonymous',
+                  userName: currentUser['name'] ?? currentUser['full_name'] ?? 'Anonymous',
                   rating: selectedRating,
                   reviewText: reviewController.text.trim().isEmpty ? null : reviewController.text.trim(),
                   createdAt: existingReview?.createdAt ?? DateTime.now(),
